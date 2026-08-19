@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Connexion — Sport Analytics</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <h1>⚽ Sport Analytics</h1>
+  <p>Connecte-toi à ton compte</p>
+</header>
+
+<main class="container narrow">
+  <section class="card">
+    <h2>Connexion</h2>
+    <form id="loginForm" class="auth-form">
+      <label>Email
+        <input type="email" id="email" required />
+      </label>
+      <label>Mot de passe
+        <input type="password" id="password" required />
+      </label>
+      <button type="submit">Se connecter</button>
+    </form>
+    <p id="loginMessage" class="message"></p>
+    <p class="hint">Pas encore de compte ? <a href="/register.html">S'inscrire</a></p>
+  </section>
+</main>
+
+<footer class="footer">
+  <p><a href="/">← Retour à l'accueil</a></p>
+</footer>
+
+<script src="/js/auth.js"></script>
+</body>
+</html>

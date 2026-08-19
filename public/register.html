@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inscription — Sport Analytics</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <h1>⚽ Sport Analytics</h1>
+  <p>Crée ton compte pour accéder aux analyses</p>
+</header>
+
+<main class="container narrow">
+
+  <section class="card">
+    <h2>Inscription</h2>
+    <form id="registerForm" class="auth-form">
+      <label>Nom complet
+        <input type="text" id="name" required />
+      </label>
+      <label>Email
+        <input type="email" id="email" required />
+      </label>
+      <label>Téléphone (format international, ex : +2250700000000)
+        <input type="tel" id="phone" required />
+      </label>
+      <label>Mot de passe (8 caractères minimum)
+        <input type="password" id="password" minlength="8" required />
+      </label>
+      <button type="submit">Créer mon compte</button>
+    </form>
+    <p id="registerMessage" class="message"></p>
+    <p class="hint">Déjà inscrit ? <a href="/login.html">Se connecter</a></p>
+  </section>
+
+  <section id="otpSection" class="card hidden">
+    <h2>Vérifier mon téléphone</h2>
+    <p class="hint">Un code à 6 chiffres a été envoyé par SMS.</p>
+    <form id="otpForm" class="auth-form">
+      <label>Code reçu
+        <input type="text" id="otpCode" maxlength="6" required />
+      </label>
+      <button type="submit">Vérifier</button>
+    </form>
+    <button id="resendOtp" class="secondary">Renvoyer le code</button>
+    <p id="otpMessage" class="message"></p>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p><a href="/">← Retour à l'accueil</a></p>
+</footer>
+
+<script src="/js/auth.js"></script>
+</body>
+</html>

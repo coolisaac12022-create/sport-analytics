@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Espace Administrateur — Sport Analytics</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <h1>🛠️ Espace Administrateur</h1>
+  <p>Gestion des clients et des matchs</p>
+</header>
+
+<main class="container">
+
+  <section id="statsCards" class="stats-grid">
+    <div class="stat-card"><span id="statUsers">–</span><label>Clients inscrits</label></div>
+    <div class="stat-card"><span id="statVerified">–</span><label>Comptes vérifiés</label></div>
+    <div class="stat-card"><span id="statMatches">–</span><label>Matchs enregistrés</label></div>
+    <div class="stat-card"><span id="statPredictions">–</span><label>Prédictions générées</label></div>
+  </section>
+
+  <section class="card">
+    <h2>Clients</h2>
+    <p class="hint">Email et numéro de téléphone de chaque client inscrit.</p>
+    <div class="table-wrap">
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th>Nom</th><th>Email</th><th>Téléphone</th><th>Rôle</th><th>Vérifié</th><th>Statut</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p id="usersMessage" class="message"></p>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p><a href="/">← Retour au site</a> · <a href="#" id="logoutLink">Se déconnecter</a></p>
+</footer>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>

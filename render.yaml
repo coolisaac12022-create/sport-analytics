@@ -1,0 +1,26 @@
+databases:
+  - name: sport-analytics-db
+    plan: free
+    databaseName: sportanalytics
+    user: sportanalytics_user
+
+services:
+  - type: web
+    name: sport-analytics
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sport-analytics-db
+          property: connectionString
+      - key: SPORTS_API_KEY
+        value: 3
+      - key: SPORTS_API_BASE_URL
+        value: https://www.thesportsdb.com/api/v1/json
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production

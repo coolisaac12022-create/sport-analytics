@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vérification email — Sport Analytics</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <h1>⚽ Sport Analytics</h1>
+</header>
+
+<main class="container narrow">
+  <section class="card">
+    <h2>Vérification de l'email</h2>
+    <p id="verifyMessage" class="message">Vérification en cours...</p>
+    <p><a href="/login.html">Aller à la page de connexion</a></p>
+  </section>
+</main>
+
+<script>
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  const msg = document.getElementById('verifyMessage');
+  if (!token) {
+    msg.textContent = 'Lien invalide : aucun token trouvé.';
+    msg.className = 'message error';
+    return;
+  }
+  try {
+    const res = await fetch('/api/auth/verify-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur de vérification.');
+    msg.textContent = data.message;
+    msg.className = 'message success';
+  } catch (err) {
+    msg.textContent = err.message;
+    msg.className = 'message error';
+  }
+})();
+</script>
+</body>
+</html>
