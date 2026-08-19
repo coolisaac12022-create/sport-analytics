@@ -131,4 +131,18 @@ async function predictMatch({ homeTeam, awayTeam, homeResults, awayResults }) {
   return { ...stats, homeForm, awayForm, aiAnalysis, engine };
 }
 
-module.exports = { predictMatch, computeForm, statisticalPrediction };
+
+async function generateComboSummary(picks) {
+  const list = picks.map((p, i) => (i+1) + '. ' + p.homeTeam + ' vs ' + p.awayTeam + ' - pronostic : ' + p.label + ' (confiance ' + p.confidence + '%)').join(String.fromCharCode(10));
+  const prompt = 'Tu es un analyste sportif. Voici une selection de matchs pour un combine du jour :' + String.fromCharCode(10) + list + String.fromCharCode(10) + String.fromCharCode(10) + 'Redige un court resume (4 a 6 phrases, en francais) expliquant pourquoi cette selection est jugee globalement fiable, en restant factuel et nuance. Rappelle que combiner plusieurs matchs augmente le risque global.';
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 400, messages: [{ role: 'user', content: prompt }] })
+  });
+  const data = await res.json();
+  const textBlock = data.content.find((b) => b.type === 'text');
+  return textBlock ? textBlock.text : null;
+}
+
+module.exports = { predictMatch, computeForm, statisticalPrediction, generateComboSummary };

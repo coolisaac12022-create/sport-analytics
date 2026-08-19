@@ -75,3 +75,24 @@ CREATE TABLE IF NOT EXISTS predictions (
 
 CREATE INDEX IF NOT EXISTS idx_matches_date ON matches(match_date);
 CREATE INDEX IF NOT EXISTS idx_predictions_match ON predictions(match_id);
+
+-- Combiné du jour : sélection des matchs jugés les plus fiables par l'IA
+CREATE TABLE IF NOT EXISTS daily_combos (
+    id SERIAL PRIMARY KEY,
+    combo_date DATE UNIQUE NOT NULL,
+    ai_summary TEXT,
+    engine VARCHAR(20) DEFAULT 'statistical',
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS combo_selections (
+    id SERIAL PRIMARY KEY,
+    combo_id INTEGER REFERENCES daily_combos(id) ON DELETE CASCADE,
+    match_id INTEGER REFERENCES matches(id) ON DELETE CASCADE,
+    pick_label VARCHAR(160),
+    pick_type VARCHAR(20),
+    confidence NUMERIC,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_combo_selections_combo ON combo_selections(combo_id);

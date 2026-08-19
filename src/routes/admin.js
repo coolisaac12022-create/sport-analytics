@@ -2,11 +2,21 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
+const { buildDailyCombo } = require('../services/comboBuilder');
 
-// Toutes les routes ci-dessous exigent d'être connecté ET administrateur
 router.use(requireAuth, requireAdmin);
 
-// GET /api/admin/stats — vue d'ensemble du site
+router.post('/combos/generate', async (req, res) => {
+  try {
+    const date = (req.body && req.body.date) || new Date().toISOString().slice(0, 10);
+    const result = await buildDailyCombo(date);
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message || 'Erreur lors de la generation du combine.' });
+  }
+});
+
 router.get('/stats', async (req, res) => {
   try {
     const [users, verifiedUsers, matches, predictions] = await Promise.all([
@@ -27,11 +37,10 @@ router.get('/stats', async (req, res) => {
   }
 });
 
-// GET /api/admin/users — liste de tous les clients inscrits (email + téléphone visibles)
 router.get('/users', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT id, name, email, phone, role, email_verified, phone_verified, status, created_at
+      `SELECT id, name, email, phone, role, email_verified, phone_verified, status, last_login_at, created_at
        FROM users ORDER BY created_at DESC`
     );
     res.json(rows);
@@ -41,7 +50,18 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// PATCH /api/admin/users/:id/status  { status: 'active' | 'suspended' }
+router.get('/logins', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT * FROM login_logs ORDER BY logged_in_at DESC LIMIT 200`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+});
+
 router.patch('/users/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
@@ -60,12 +80,11 @@ router.patch('/users/:id/status', async (req, res) => {
   }
 });
 
-// PATCH /api/admin/users/:id/role  { role: 'user' | 'admin' }
 router.patch('/users/:id/role', async (req, res) => {
   try {
     const { role } = req.body;
     if (!['user', 'admin'].includes(role)) {
-      return res.status(400).json({ error: 'Rôle invalide.' });
+      return res.status(400).json({ error: 'Role invalide.' });
     }
     const { rows } = await pool.query(
       'UPDATE users SET role = $1 WHERE id = $2 RETURNING id, name, role',
@@ -79,19 +98,17 @@ router.patch('/users/:id/role', async (req, res) => {
   }
 });
 
-// DELETE /api/admin/users/:id
 router.delete('/users/:id', async (req, res) => {
   try {
     const { rows } = await pool.query('DELETE FROM users WHERE id = $1 RETURNING id', [req.params.id]);
     if (rows.length === 0) return res.status(404).json({ error: 'Client introuvable.' });
-    res.json({ message: 'Client supprimé.' });
+    res.json({ message: 'Client supprime.' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erreur serveur.' });
   }
 });
 
-// GET /api/admin/matches — tous les matchs enregistrés (vue complète, sans limite)
 router.get('/matches', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM matches ORDER BY match_date DESC LIMIT 500');
@@ -102,12 +119,11 @@ router.get('/matches', async (req, res) => {
   }
 });
 
-// DELETE /api/admin/matches/:id
 router.delete('/matches/:id', async (req, res) => {
   try {
     const { rows } = await pool.query('DELETE FROM matches WHERE id = $1 RETURNING id', [req.params.id]);
     if (rows.length === 0) return res.status(404).json({ error: 'Match introuvable.' });
-    res.json({ message: 'Match supprimé.' });
+    res.json({ message: 'Match supprime.' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erreur serveur.' });
