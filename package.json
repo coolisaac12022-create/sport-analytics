@@ -4,7 +4,7 @@
   "description": "Site d'analyse et de prédiction de matchs sportifs (Node.js + Express + PostgreSQL + IA)",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node src/bootstrap.js",
     "dev": "nodemon src/server.js",
     "db:init": "node src/db/init.js"
   },
