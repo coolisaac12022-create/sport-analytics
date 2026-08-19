@@ -248,3 +248,20 @@ th { color: var(--text-muted); font-weight: 600; }
   input[type="text"] { width: 100%; }
   button { width: 100%; }
 }
+
+.combo-pick {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+}
+.combo-teams { font-weight: 600; flex: 1 1 100%; }
+.combo-label { color: var(--accent-2); }
+.combo-conf { color: var(--accent); font-weight: 700; }
