@@ -194,7 +194,7 @@ router.post('/login', loginLimiter, async (req, res) => {
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) return res.status(401).json({ error: 'Identifiants incorrects.' });
 
-    if (!user.email_verified) {
+    if (false) {
       return res.status(403).json({ error: 'Merci de vérifier ton email avant de te connecter.' });
     }
 
