@@ -177,9 +177,9 @@ function renderCombo(data) {
 
   el.innerHTML = `
     <h3>Selection 1X2</h3>
-    ${combiPicks.length ? renderList(combiPicks) : '<p class="hint">Aucune selection pour aujourd\\'hui.</p>'}
+    ${combiPicks.length ? renderList(combiPicks) : '<p class="hint">Aucune selection pour aujourd hui.</p>'}
     <h3>Scores exacts pressentis</h3>
-    ${scorePicks.length ? renderList(scorePicks) : '<p class="hint">Aucun score exact suffisamment fiable aujourd\\'hui.</p>'}
+    ${scorePicks.length ? renderList(scorePicks) : '<p class="hint">Aucun score exact suffisamment fiable aujourd hui.</p>'}
     ${summary ? `<div class="analysis-box">${summary}</div>` : ''}
   `;
 }
