@@ -96,3 +96,8 @@ CREATE TABLE IF NOT EXISTS combo_selections (
 );
 
 CREATE INDEX IF NOT EXISTS idx_combo_selections_combo ON combo_selections(combo_id);
+
+-- Ajoute les colonnes manquantes sur les bases deja existantes (sans danger si deja presentes)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code VARCHAR(10);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code_expires TIMESTAMP;
