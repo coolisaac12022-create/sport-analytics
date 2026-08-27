@@ -11,6 +11,7 @@ const adminRouter = require('./routes/admin');
 const pool = require('./config/db');
 const cron = require('node-cron');
 const { buildDailyCombo } = require('./services/comboBuilder');
+const { autoSyncAllLeagues } = require('./services/leagueSync');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,7 +41,8 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Serveur lance sur le port ${PORT}`);
+  console.log("Serveur lance sur le port " + PORT);
+  autoSyncAllLeagues().catch(function(err) { console.error('Erreur sync initiale :', err.message); });
 });
 
 cron.schedule('0 8 * * *', async () => {
@@ -50,5 +52,14 @@ cron.schedule('0 8 * * *', async () => {
     console.log('Combine du jour genere automatiquement pour', today);
   } catch (err) {
     console.error('Generation automatique du combine impossible :', err.message);
+  }
+});
+
+cron.schedule('0 */6 * * *', async () => {
+  try {
+    const total = await autoSyncAllLeagues();
+    console.log('Synchronisation automatique terminee :', total, 'match(s) au total.');
+  } catch (err) {
+    console.error('Erreur lors de la synchronisation automatique :', err.message);
   }
 });
