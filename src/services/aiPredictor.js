@@ -67,6 +67,9 @@ function statisticalPrediction(homeForm, awayForm) {
   let homeWinProb = 0;
   let drawProb = 0;
   let awayWinProb = 0;
+  let bttsYesProb = 0;
+  let over15Prob = 0;
+  let over25Prob = 0;
   let bestScore = { home: 0, away: 0 };
   let bestScoreProb = 0;
 
@@ -80,6 +83,10 @@ function statisticalPrediction(homeForm, awayForm) {
       else if (h === a) drawProb += cellProb;
       else awayWinProb += cellProb;
 
+      if (h >= 1 && a >= 1) bttsYesProb += cellProb;
+      if (h + a >= 2) over15Prob += cellProb;
+      if (h + a >= 3) over25Prob += cellProb;
+
       if (cellProb > bestScoreProb) {
         bestScoreProb = cellProb;
         bestScore = { home: h, away: a };
@@ -91,6 +98,9 @@ function statisticalPrediction(homeForm, awayForm) {
   homeWinProb = homeWinProb / total;
   drawProb = drawProb / total;
   awayWinProb = awayWinProb / total;
+  bttsYesProb = bttsYesProb / total;
+  over15Prob = over15Prob / total;
+  over25Prob = over25Prob / total;
 
   const confidence = Math.round(Math.max(homeWinProb, drawProb, awayWinProb) * 100);
 
@@ -98,6 +108,9 @@ function statisticalPrediction(homeForm, awayForm) {
     homeWinProb: round(homeWinProb),
     drawProb: round(drawProb),
     awayWinProb: round(awayWinProb),
+    bttsYesProb: round(bttsYesProb),
+    over15Prob: round(over15Prob),
+    over25Prob: round(over25Prob),
     predictedScore: bestScore,
     confidence: confidence,
     expectedGoals: { home: round(lambdaHome), away: round(lambdaAway) }

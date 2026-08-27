@@ -101,3 +101,6 @@ CREATE INDEX IF NOT EXISTS idx_combo_selections_combo ON combo_selections(combo_
 ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code VARCHAR(10);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code_expires TIMESTAMP;
+ALTER TABLE predictions ADD COLUMN IF NOT EXISTS btts_yes_prob NUMERIC;
+ALTER TABLE predictions ADD COLUMN IF NOT EXISTS over_1_5_prob NUMERIC;
+ALTER TABLE predictions ADD COLUMN IF NOT EXISTS over_2_5_prob NUMERIC;
