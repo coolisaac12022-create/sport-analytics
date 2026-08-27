@@ -120,6 +120,10 @@ function renderPrediction(match, p) {
   const drawPct = Math.round(p.draw_prob * 100);
   const awayPct = 100 - homePct - drawPct;
 
+  const bttsYesPct = p.btts_yes_prob != null ? Math.round(p.btts_yes_prob * 100) : null;
+  const over15Pct = p.over_1_5_prob != null ? Math.round(p.over_1_5_prob * 100) : null;
+  const over25Pct = p.over_2_5_prob != null ? Math.round(p.over_2_5_prob * 100) : null;
+
   predictionContent.innerHTML = `
     <span class="engine-tag">${p.engine === 'ai' ? 'Analyse IA' : 'Moteur statistique'}</span>
     <h3>${match.home_team_name} vs ${match.away_team_name}</h3>
@@ -130,7 +134,31 @@ function renderPrediction(match, p) {
     </div>
     <p>Score probable : <strong>${p.predicted_score_home} - ${p.predicted_score_away}</strong> (confiance ${p.confidence}%)</p>
     ${p.ai_analysis ? `<div class="analysis-box">${p.ai_analysis}</div>` : ''}
+    ${bttsYesPct !== null ? `
+      <button id="toggleMarketsBtn" class="secondary small">Voir plus de statistiques</button>
+      <div id="extraMarkets" class="hidden">
+        <div class="market-row">
+          <span>But/But (les 2 equipes marquent)</span>
+          <span><strong>Oui ${bttsYesPct}%</strong> / Non ${100 - bttsYesPct}%</span>
+        </div>
+        <div class="market-row">
+          <span>+1,5 / -1,5 buts</span>
+          <span><strong>+1,5 : ${over15Pct}%</strong> / -1,5 : ${100 - over15Pct}%</span>
+        </div>
+        <div class="market-row">
+          <span>+2,5 / -2,5 buts</span>
+          <span><strong>+2,5 : ${over25Pct}%</strong> / -2,5 : ${100 - over25Pct}%</span>
+        </div>
+      </div>
+    ` : ''}
   `;
+
+  const toggleBtn = document.getElementById('toggleMarketsBtn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      document.getElementById('extraMarkets').classList.toggle('hidden');
+    });
+  }
 }
 
 function showMessage(el, text, type) {

@@ -265,3 +265,24 @@ th { color: var(--text-muted); font-weight: 600; }
 .combo-teams { font-weight: 600; flex: 1 1 100%; }
 .combo-label { color: var(--accent-2); }
 .combo-conf { color: var(--accent); font-weight: 700; }
+
+.market-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #334155;
+  font-size: 0.9rem;
+}
+.market-row:last-child { border-bottom: none; }
+
+.contact-links {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.contact-links a { color: var(--accent-2); text-decoration: none; }
+.contact-links a:hover { text-decoration: underline; }

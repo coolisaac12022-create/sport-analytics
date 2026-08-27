@@ -36,8 +36,8 @@ async function ensurePrediction(match) {
   });
 
   const inserted = await pool.query(
-    "INSERT INTO predictions (match_id, home_win_prob, draw_prob, away_win_prob, predicted_score_home, predicted_score_away, confidence, ai_analysis, engine) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",
-    [match.id, prediction.homeWinProb, prediction.drawProb, prediction.awayWinProb, prediction.predictedScore.home, prediction.predictedScore.away, prediction.confidence, prediction.aiAnalysis, prediction.engine]
+    "INSERT INTO predictions (match_id, home_win_prob, draw_prob, away_win_prob, predicted_score_home, predicted_score_away, confidence, ai_analysis, engine, btts_yes_prob, over_1_5_prob, over_2_5_prob) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *",
+    [match.id, prediction.homeWinProb, prediction.drawProb, prediction.awayWinProb, prediction.predictedScore.home, prediction.predictedScore.away, prediction.confidence, prediction.aiAnalysis, prediction.engine, prediction.bttsYesProb, prediction.over15Prob, prediction.over25Prob]
   );
   return inserted.rows[0];
 }
