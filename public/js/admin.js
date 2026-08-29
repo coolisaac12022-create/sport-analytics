@@ -103,5 +103,26 @@ function escapeHtml(str = '') {
   }[c]));
 }
 
+document.getElementById('regenerateComboBtn').addEventListener('click', async () => {
+  const msg = document.getElementById('comboMessage');
+  msg.textContent = 'Generation en cours...';
+  msg.className = 'message';
+  try {
+    const res = await fetch(`${API}/admin/combos/generate`, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify({})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur.');
+    msg.textContent = 'Combine regenere avec succes !';
+    msg.className = 'message success';
+  } catch (err) {
+    msg.textContent = err.message;
+    msg.className = 'message error';
+  }
+});
+
 loadStats();
 loadUsers();
+loadLogins();
