@@ -27,12 +27,11 @@ function pickBestOption(match, prediction) {
   }
   return best;
 }
-}
 
-async function buildDailyCombo(dateStr) {
-  const matchesRes = await pool.query(
-    "SELECT * FROM matches WHERE match_date >= NOW() AND match_date::date <= ($1::date + INTERVAL '4 days') ORDER BY match_date ASC LIMIT 40",
-    [dateStr]
+async function ensurePrediction(match) {
+  const existing = await pool.query(
+    "SELECT * FROM predictions WHERE match_id = $1 ORDER BY created_at DESC LIMIT 1",
+    [match.id]
   );
   if (existing.rows.length > 0) return existing.rows[0];
 
@@ -57,7 +56,7 @@ async function buildDailyCombo(dateStr) {
 
 async function buildDailyCombo(dateStr) {
   const matchesRes = await pool.query(
-    "SELECT * FROM matches WHERE match_date::date = $1 ORDER BY match_date ASC LIMIT 30",
+    "SELECT * FROM matches WHERE match_date >= NOW() AND match_date::date <= ($1::date + INTERVAL '4 days') ORDER BY match_date ASC LIMIT 40",
     [dateStr]
   );
   const matches = matchesRes.rows;
