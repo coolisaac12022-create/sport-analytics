@@ -2,9 +2,9 @@ const pool = require('../config/db');
 const sportsApi = require('./sportsApi');
 const { predictMatch, generateComboSummary } = require('./aiPredictor');
 
-const COMBO_SIZE = 5;
-const EXACT_SCORE_MIN_CONF = 35;
-const EXACT_SCORE_MAX = 3;
+const COMBO_SIZE = 10;
+const EXACT_SCORE_MIN_CONF = 30;
+const EXACT_SCORE_MAX = 08;
 
 function pickBestOption(match, prediction) {
   const homeP = Number(prediction.home_win_prob);
@@ -56,7 +56,7 @@ async function ensurePrediction(match) {
 
 async function buildDailyCombo(dateStr) {
   const matchesRes = await pool.query(
-    "SELECT * FROM matches WHERE match_date >= NOW() AND match_date::date <= ($1::date + INTERVAL '4 days') ORDER BY match_date ASC LIMIT 40",
+        "SELECT * FROM matches WHERE match_date >= NOW() AND match_date::date <= ($1::date + INTERVAL '4 days') ORDER BY match_date ASC LIMIT 80",,
     [dateStr]
   );
   const matches = matchesRes.rows;
