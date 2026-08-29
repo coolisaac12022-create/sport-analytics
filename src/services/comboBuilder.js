@@ -16,10 +16,10 @@ function pickLabel(match, prediction) {
   return "Match nul";
 }
 
-async function ensurePrediction(match) {
-  const existing = await pool.query(
-    "SELECT * FROM predictions WHERE match_id = $1 ORDER BY created_at DESC LIMIT 1",
-    [match.id]
+async function buildDailyCombo(dateStr) {
+  const matchesRes = await pool.query(
+    "SELECT * FROM matches WHERE match_date >= NOW() AND match_date::date <= ($1::date + INTERVAL '4 days') ORDER BY match_date ASC LIMIT 40",
+    [dateStr]
   );
   if (existing.rows.length > 0) return existing.rows[0];
 
