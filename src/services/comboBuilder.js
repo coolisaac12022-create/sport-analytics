@@ -6,14 +6,27 @@ const COMBO_SIZE = 5;
 const EXACT_SCORE_MIN_CONF = 35;
 const EXACT_SCORE_MAX = 3;
 
-function pickLabel(match, prediction) {
-  const homeP = prediction.home_win_prob;
-  const drawP = prediction.draw_prob;
-  const awayP = prediction.away_win_prob;
-  const best = Math.max(homeP, drawP, awayP);
-  if (best === homeP) return "Victoire " + match.home_team_name;
-  if (best === awayP) return "Victoire " + match.away_team_name;
-  return "Match nul";
+function pickBestOption(match, prediction) {
+  const homeP = Number(prediction.home_win_prob);
+  const drawP = Number(prediction.draw_prob);
+  const awayP = Number(prediction.away_win_prob);
+  const home1X = homeP + drawP;
+  const awayX2 = drawP + awayP;
+
+  const candidates = [
+    { label: "Victoire " + match.home_team_name, prob: homeP },
+    { label: "Victoire " + match.away_team_name, prob: awayP },
+    { label: "Match nul", prob: drawP },
+    { label: "Victoire " + match.home_team_name + " ou Match nul", prob: home1X },
+    { label: "Victoire " + match.away_team_name + " ou Match nul", prob: awayX2 }
+  ];
+
+  let best = candidates[0];
+  for (const c of candidates) {
+    if (c.prob > best.prob) best = c;
+  }
+  return best;
+}
 }
 
 async function buildDailyCombo(dateStr) {
@@ -65,13 +78,14 @@ async function buildDailyCombo(dateStr) {
   analyzed.sort(function(a, b) { return b.prediction.confidence - a.prediction.confidence; });
 
   const comboPicks = analyzed.slice(0, COMBO_SIZE).map(function(item) {
+    const bestOption = pickBestOption(item.match, item.prediction);
     return {
       matchId: item.match.id,
       homeTeam: item.match.home_team_name,
       awayTeam: item.match.away_team_name,
-      label: pickLabel(item.match, item.prediction),
+      label: bestOption.label,
       type: "1x2",
-      confidence: Number(item.prediction.confidence)
+      confidence: Math.round(bestOption.prob * 100)
     };
   });
 
