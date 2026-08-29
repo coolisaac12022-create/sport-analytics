@@ -70,8 +70,26 @@ async function loadMatches() {
       matchesList.innerHTML = '<p class="hint">Aucun match trouvé.</p>';
       return;
     }
+
+    const groups = {};
+    matches.forEach((m) => {
+      const dateKey = m.match_date ? new Date(m.match_date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Date inconnue';
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(m);
+    });
+
     matchesList.innerHTML = '';
-    matches.forEach((m) => matchesList.appendChild(renderMatchCard(m)));
+    matchesList.className = '';
+    Object.keys(groups).forEach((dateKey) => {
+      const dayBlock = document.createElement('div');
+      dayBlock.className = 'calendar-day';
+      dayBlock.innerHTML = `<h3 class="calendar-date">${dateKey}</h3>`;
+      const dayGrid = document.createElement('div');
+      dayGrid.className = 'matches-grid';
+      groups[dateKey].forEach((m) => dayGrid.appendChild(renderMatchCard(m)));
+      dayBlock.appendChild(dayGrid);
+      matchesList.appendChild(dayBlock);
+    });
   } catch (err) {
     matchesList.innerHTML = `<p class="message error">Impossible de charger les matchs.</p>`;
   }
