@@ -56,7 +56,7 @@ async function ensurePrediction(match) {
 
 async function buildDailyCombo(dateStr) {
   const matchesRes = await pool.query(
-        "SELECT * FROM matches WHERE match_date >= NOW() AND match_date::date <= ($1::date + INTERVAL '4 days') ORDER BY match_date ASC LIMIT 80",,
+        "SELECT * FROM matches WHERE match_date >= NOW() AND match_date::date <= ($1::date + INTERVAL '4 days') ORDER BY match_date ASC LIMIT 80",
     [dateStr]
   );
   const matches = matchesRes.rows;
