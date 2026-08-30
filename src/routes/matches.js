@@ -6,9 +6,16 @@ const { syncLeague } = require('../services/leagueSync');
 
 router.get('/', async (req, res) => {
   try {
-    const { status, league } = req.query;
-    const conditions = ['match_date >= NOW()'];
+    const { status, league, date } = req.query;
+    const conditions = [];
     const values = [];
+
+    if (date) {
+      values.push(date);
+      conditions.push(`match_date::date = $${values.length}`);
+    } else {
+      conditions.push('match_date >= NOW()');
+    }
 
     if (status) {
       values.push(status);

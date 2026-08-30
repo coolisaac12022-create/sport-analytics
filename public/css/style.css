@@ -286,3 +286,24 @@ th { color: var(--text-muted); font-weight: 600; }
 }
 .contact-links a { color: var(--accent-2); text-decoration: none; }
 .contact-links a:hover { text-decoration: underline; }
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.calendar-nav button {
+  background: #334155;
+  color: var(--text);
+  padding: 8px 14px;
+  font-size: 0.85rem;
+}
+.calendar-date-label {
+  font-weight: 600;
+  text-transform: capitalize;
+  text-align: center;
+  flex: 1;
+}

@@ -61,38 +61,49 @@ syncBtn.addEventListener('click', async () => {
   }
 });
 
+let currentCalendarDate = new Date();
+
+function formatDateForApi(d) {
+  return d.toISOString().slice(0, 10);
+}
+
+function formatDateForLabel(d) {
+  return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
 async function loadMatches() {
+  const label = document.getElementById('calendarDateLabel');
+  if (label) label.textContent = formatDateForLabel(currentCalendarDate);
+
   matchesList.innerHTML = '<p class="hint">Chargement...</p>';
   try {
-    const res = await fetch(`${API}/matches`);
+    const dateStr = formatDateForApi(currentCalendarDate);
+    const res = await fetch(`${API}/matches?date=${dateStr}`);
     const matches = await res.json();
     if (!matches.length) {
-      matchesList.innerHTML = '<p class="hint">Aucun match trouvé.</p>';
+      matchesList.innerHTML = '<p class="hint">Aucun match ce jour-là.</p>';
       return;
     }
-
-    const groups = {};
-    matches.forEach((m) => {
-      const dateKey = m.match_date ? new Date(m.match_date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Date inconnue';
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(m);
-    });
-
     matchesList.innerHTML = '';
-    matchesList.className = '';
-    Object.keys(groups).forEach((dateKey) => {
-      const dayBlock = document.createElement('div');
-      dayBlock.className = 'calendar-day';
-      dayBlock.innerHTML = `<h3 class="calendar-date">${dateKey}</h3>`;
-      const dayGrid = document.createElement('div');
-      dayGrid.className = 'matches-grid';
-      groups[dateKey].forEach((m) => dayGrid.appendChild(renderMatchCard(m)));
-      dayBlock.appendChild(dayGrid);
-      matchesList.appendChild(dayBlock);
-    });
+    matches.forEach((m) => matchesList.appendChild(renderMatchCard(m)));
   } catch (err) {
     matchesList.innerHTML = `<p class="message error">Impossible de charger les matchs.</p>`;
   }
+}
+
+const prevDayBtn = document.getElementById('prevDayBtn');
+const nextDayBtn = document.getElementById('nextDayBtn');
+if (prevDayBtn) {
+  prevDayBtn.addEventListener('click', () => {
+    currentCalendarDate.setDate(currentCalendarDate.getDate() - 1);
+    loadMatches();
+  });
+}
+if (nextDayBtn) {
+  nextDayBtn.addEventListener('click', () => {
+    currentCalendarDate.setDate(currentCalendarDate.getDate() + 1);
+    loadMatches();
+  });
 }
 
 function renderMatchCard(match) {
