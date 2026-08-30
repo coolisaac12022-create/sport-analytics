@@ -236,20 +236,27 @@ function renderCombo(data) {
   const combiPicks = picks.filter((p) => (p.pick_type || p.type) === '1x2');
   const scorePicks = picks.filter((p) => (p.pick_type || p.type) === 'exact_score');
   const summary = data.combo ? data.combo.ai_summary : null;
+  const totalOdds = data.totalOdds;
 
-  const renderList = (list) => list.map((p) => `
-    <div class="combo-pick">
+  const renderList = (list) => list.map((p) => {
+    const result = p.result || 'pending';
+    const badge = result === 'won' ? 'GAGNE' : (result === 'lost' ? 'PERDU' : 'EN COURS');
+    return `
+    <div class="combo-pick ${result}">
       <span class="combo-teams">${p.home_team_name || p.homeTeam} vs ${p.away_team_name || p.awayTeam}</span>
       <span class="combo-label">${p.pick_label || p.label}</span>
       <span class="combo-conf">${Math.round(p.confidence)}%</span>
+      <span class="pick-badge ${result}">${badge}</span>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   el.innerHTML = `
+    ${totalOdds ? `<div class="combo-total-odds">Cote combinee estimee : <strong>${totalOdds}</strong></div>` : ''}
     <h3>Selection 1X2</h3>
     ${combiPicks.length ? renderList(combiPicks) : '<p class="hint">Aucune selection pour aujourd hui.</p>'}
     <h3>Scores exacts pressentis</h3>
-    ${scorePicks.length ? renderList(scorePicks) : '<p class="hint">Aucun score exact suffisamment fiable aujourd hui.</p>'}
+    ${scorePicks.length ? renderList(scorePicks) : '<p class="hint">Aucun score exact suffisamment fiable.</p>'}
     ${summary ? `<div class="analysis-box">${summary}</div>` : ''}
   `;
 }

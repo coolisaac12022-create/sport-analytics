@@ -320,3 +320,12 @@ th { color: var(--text-muted); font-weight: 600; }
   flex-wrap: wrap;
 }
 .odds-row strong { color: var(--accent-2); }
+
+.combo-pick.won { border-left: 4px solid #22c55e; }
+.combo-pick.lost { border-left: 4px solid #ef4444; opacity: 0.7; }
+.combo-pick.pending { border-left: 4px solid #64748b; }
+.pick-badge { padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+.pick-badge.won { background: #22c55e; color: #052e16; }
+.pick-badge.lost { background: #ef4444; color: #fff; }
+.pick-badge.pending { background: #64748b; color: #fff; }
+.combo-total-odds { text-align: center; font-size: 1.1rem; margin: 10px 0; padding: 10px; background: #0f172a; border-radius: 8px; }
