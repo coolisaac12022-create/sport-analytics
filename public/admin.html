@@ -22,6 +22,16 @@
     <div class="stat-card"><span id="statPredictions">–</span><label>Prédictions générées</label></div>
   </section>
   <section class="card">
+    <h2>Synchroniser une ligue</h2>
+    <p class="hint">Force la synchronisation immediate d'une ligue (ID TheSportsDB, ex : 4328 = Premier League).</p>
+    <div class="form-row">
+      <input type="text" id="leagueIdInput" placeholder="ID de la ligue" />
+      <button id="syncLeagueBtn">Synchroniser</button>
+    </div>
+    <p id="syncMessage" class="message"></p>
+  </section>
+
+  <section class="card">
     <h2>Combiné du jour</h2>
     <p class="hint">Force le recalcul du combiné avec les derniers matchs et le moteur le plus a jour.</p>
     <button id="regenerateComboBtn">Regenerer le combine du jour</button>

@@ -123,6 +123,32 @@ document.getElementById('regenerateComboBtn').addEventListener('click', async ()
   }
 });
 
+document.getElementById('syncLeagueBtn').addEventListener('click', async () => {
+  const leagueId = document.getElementById('leagueIdInput').value.trim();
+  const msg = document.getElementById('syncMessage');
+  if (!leagueId) {
+    msg.textContent = 'Entre un ID de ligue.';
+    msg.className = 'message error';
+    return;
+  }
+  msg.textContent = 'Synchronisation en cours...';
+  msg.className = 'message';
+  try {
+    const res = await fetch(`${API}/matches/sync`, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify({ leagueId: leagueId })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur.');
+    msg.textContent = data.message;
+    msg.className = 'message success';
+  } catch (err) {
+    msg.textContent = err.message;
+    msg.className = 'message error';
+  }
+});
+
 loadStats();
 loadUsers();
 loadLogins();

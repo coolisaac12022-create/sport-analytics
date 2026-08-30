@@ -144,10 +144,18 @@ async function loadPrediction(matchId, match) {
   }
 }
 
+function toOdds(prob) {
+  if (!prob || prob <= 0) return '-';
+  return (1 / prob).toFixed(2);
+}
+
 function renderPrediction(match, p) {
   const homePct = Math.round(p.home_win_prob * 100);
   const drawPct = Math.round(p.draw_prob * 100);
   const awayPct = 100 - homePct - drawPct;
+  const homeOdds = toOdds(p.home_win_prob);
+  const drawOdds = toOdds(p.draw_prob);
+  const awayOdds = toOdds(p.away_win_prob);
 
   const bttsYesPct = p.btts_yes_prob != null ? Math.round(p.btts_yes_prob * 100) : null;
   const over15Pct = p.over_1_5_prob != null ? Math.round(p.over_1_5_prob * 100) : null;
@@ -160,6 +168,11 @@ function renderPrediction(match, p) {
       <span class="prob-home" style="width:${homePct}%">${homePct}%</span>
       <span class="prob-draw" style="width:${drawPct}%">${drawPct}%</span>
       <span class="prob-away" style="width:${awayPct}%">${awayPct}%</span>
+    </div>
+    <div class="odds-row">
+      <span>Cote 1 : <strong>${homeOdds}</strong></span>
+      <span>Cote X : <strong>${drawOdds}</strong></span>
+      <span>Cote 2 : <strong>${awayOdds}</strong></span>
     </div>
     <p>Score probable : <strong>${p.predicted_score_home} - ${p.predicted_score_away}</strong> (confiance ${p.confidence}%)</p>
     ${p.ai_analysis ? `<div class="analysis-box">${p.ai_analysis}</div>` : ''}

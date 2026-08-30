@@ -307,3 +307,16 @@ th { color: var(--text-muted); font-weight: 600; }
   text-align: center;
   flex: 1;
 }
+
+.odds-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  margin: 10px 0;
+  padding: 8px;
+  background: #0f172a;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+.odds-row strong { color: var(--accent-2); }
