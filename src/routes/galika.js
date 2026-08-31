@@ -3,86 +3,91 @@
 const express = require('express');
 const router = express.Router();
 
+const pool = require('../config/db');
+
 const {
-  analyzeTeam,
-  compareTeams,
-  generateReport
-} = require('../services/galika/galikaEngine');
+  setUser,
+  addEvent,
+  getRecentEvents
+} = require('../services/galika/galikaContext');
 
-/*
- * POST /api/galika/analyze
- *
- * Reçoit :
- * {
- *   home: { name: "...", recent: {...} },
- *   away: { name: "...", recent: {...} }
- * }
- */
-router.post('/analyze', (req, res) => {
+const { requireAuth } = require('../middleware/auth');
+const { createResponse } = require('../services/galika/galikaAssistant');
+
+router.post('/context', requireAuth, async (req, res) => {
   try {
-    const { home, away } = req.body;
+    const { rows } = await pool.query(
+      'SELECT id, name, role FROM users WHERE id = $1',
+      [req.user.id]
+    );
 
-    if (!home || !away) {
-      return res.status(400).json({
-        error: 'Les données des deux équipes sont nécessaires.'
+    if (!rows.length) {
+      return res.status(404).json({
+        error: 'Utilisateur introuvable.'
       });
     }
 
-    const report = generateReport(home, away);
+    setUser(rows[0]);
+
+    addEvent({
+      type: req.body.type,
+      data: req.body.data || {}
+    });
 
     res.json({
-      success: true,
-      ...report
+      success: true
     });
-  } catch (error) {
-    console.error('Galika error:', error);
-
+  } catch (err) {
+    console.error('Galika context error:', err);
     res.status(500).json({
-      error: 'Impossible de générer l’analyse.'
+      error: 'Impossible d’enregistrer le contexte Galika.'
     });
   }
 });
 
-router.post('/team', (req, res) => {
-  try {
-    if (!req.body.team) {
-      return res.status(400).json({
-        error: 'Les données de l’équipe sont nécessaires.'
-      });
-    }
-
-    res.json({
-      success: true,
-      analysis: analyzeTeam(req.body.team)
-    });
-  } catch (error) {
-    console.error('Galika team error:', error);
-
-    res.status(500).json({
-      error: 'Impossible d’analyser cette équipe.'
-    });
-  }
+router.get('/context', requireAuth, (req, res) => {
+  res.json({
+    success: true,
+    events: getRecentEvents(20)
+  });
 });
 
-router.post('/compare', (req, res) => {
-  try {
-    const { home, away } = req.body;
 
-    if (!home || !away) {
+router.post('/ask', requireAuth, async (req, res) => {
+  try {
+    const { question, context } = req.body;
+
+    if (!question || !String(question).trim()) {
       return res.status(400).json({
-        error: 'Les deux équipes sont nécessaires.'
+        error: 'Question requise.'
       });
     }
 
+    const { rows } = await pool.query(
+      'SELECT id, name, role FROM users WHERE id = $1',
+      [req.user.id]
+    );
+
+    if (!rows.length) {
+      return res.status(404).json({
+        error: 'Utilisateur introuvable.'
+      });
+    }
+
+    const answer = createResponse(
+      rows[0],
+      question,
+      context || {}
+    );
+
     res.json({
       success: true,
-      comparison: compareTeams(home, away)
+      answer
     });
-  } catch (error) {
-    console.error('Galika compare error:', error);
-
+  } catch (err) {
+    console.error('Galika ask error:', err);
     res.status(500).json({
-      error: 'Impossible de comparer les équipes.'
+      error: 'Galika ne peut pas répondre pour le moment.'
     });
   }
 });
