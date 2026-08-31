@@ -8,6 +8,7 @@ const predictionsRouter = require('./routes/predictions');
 const combosRouter = require('./routes/combos');
 const authRouter = require('./routes/auth');
 const adminRouter = require('./routes/admin');
+const galikaRouter = require('./routes/galika');
 const pool = require('./config/db');
 const cron = require('node-cron');
 const { buildDailyCombo } = require('./services/comboBuilder');
@@ -35,6 +36,7 @@ app.use('/api/admin', adminRouter);
 app.use('/api/matches', matchesRouter);
 app.use('/api/predictions', predictionsRouter);
 app.use('/api/combos', combosRouter);
+app.use('/api/galika', galikaRouter);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
