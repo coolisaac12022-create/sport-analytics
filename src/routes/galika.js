@@ -29,7 +29,7 @@ router.post('/context', requireAuth, async (req, res) => {
 
     setUser(rows[0]);
 
-    addEvent({
+    addEvent(req.user.id, {
       type: req.body.type,
       data: req.body.data || {}
     });
@@ -48,7 +48,7 @@ router.post('/context', requireAuth, async (req, res) => {
 router.get('/context', requireAuth, (req, res) => {
   res.json({
     success: true,
-    events: getRecentEvents(20)
+    events: getRecentEvents(req.user.id, 20)
   });
 });
 
