@@ -157,7 +157,11 @@ async function loadPrediction(matchId, match) {
     if (window.GalikaObserver) {
       window.GalikaObserver.send('prediction_loaded', {
         matchId,
-        source: 'predictions'
+        source: 'predictions',
+        homeTeam: match.homeTeam || match.home_team || match.home_team_name || '',
+        awayTeam: match.awayTeam || match.away_team || match.away_team_name || '',
+        league: match.league || '',
+        page: window.location.pathname
       });
     }
     renderPrediction(match, p);

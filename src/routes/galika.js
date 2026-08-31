@@ -8,7 +8,8 @@ const pool = require('../config/db');
 const {
   setUser,
   addEvent,
-  getRecentEvents
+  getRecentEvents,
+  getContext
 } = require('../services/galika/galikaContext');
 
 const { requireAuth } = require('../middleware/auth');
@@ -27,9 +28,9 @@ router.post('/context', requireAuth, async (req, res) => {
       });
     }
 
-    setUser(rows[0]);
+    await setUser(rows[0]);
 
-    addEvent(req.user.id, {
+    await addEvent(req.user.id, {
       type: req.body.type,
       data: req.body.data || {}
     });
@@ -45,10 +46,10 @@ router.post('/context', requireAuth, async (req, res) => {
   }
 });
 
-router.get('/context', requireAuth, (req, res) => {
+router.get('/context', requireAuth, async (req, res) => {
   res.json({
     success: true,
-    events: getRecentEvents(req.user.id, 20)
+    events: await getRecentEvents(req.user.id, 20)
   });
 });
 
@@ -74,10 +75,18 @@ router.post('/ask', requireAuth, async (req, res) => {
       });
     }
 
-    const answer = createResponse(
+    const storedContext = await getContext(req.user.id);
+
+    const galikaContext = {
+      ...storedContext,
+      ...(context || {}),
+      events: storedContext.events || []
+    };
+
+    const answer = await createResponse(
       rows[0],
       question,
-      context || {}
+      galikaContext
     );
 
     res.json({

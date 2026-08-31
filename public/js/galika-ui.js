@@ -267,6 +267,119 @@
   }, 500);
 
 
+  function galikaSpeak(text) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+
+      const speech = new SpeechSynthesisUtterance(
+        String(text).replace(/<[^>]*>/g, '')
+      );
+
+      speech.lang = 'fr-FR';
+      speech.rate = 1;
+      speech.pitch = 1;
+
+      window.speechSynthesis.speak(speech);
+    }
+
+    const old = document.getElementById('galika-auto-message');
+    if (old) old.remove();
+
+    const box = document.createElement('div');
+    box.id = 'galika-auto-message';
+
+    box.innerHTML = `
+      <strong>🤖 Galika</strong>
+      <div>${text}</div>
+    `;
+
+    box.style.cssText = `
+      position: fixed;
+      right: 20px;
+      bottom: 160px;
+      max-width: 320px;
+      padding: 14px 16px;
+      background: white;
+      color: #111827;
+      border-radius: 14px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.22);
+      z-index: 10000;
+      font-size: 14px;
+      line-height: 1.5;
+    `;
+
+    document.body.appendChild(box);
+
+    setTimeout(() => {
+      box.remove();
+    }, 7000);
+  }
+
+  let galikaLastReaction = '';
+  let galikaLastReactionAt = 0;
+
+  function galikaSmartReact(type, data = {}) {
+    const now = Date.now();
+
+    if (now - galikaLastReactionAt < 5000) return;
+
+    const key = type + ':' + JSON.stringify(data);
+
+    if (key === galikaLastReaction) return;
+
+    galikaLastReaction = key;
+    galikaLastReactionAt = now;
+
+    galikaReact(type, data);
+  }
+
+  function galikaReact(type, data = {}) {
+    if (type === 'PAGE_VIEW') {
+      if (data.page === '/' || data.page === '/index.html') {
+        galikaSpeak(
+          `Bienvenue ${name} 👋 Je suis Galika. Je suis prête à t'accompagner sur Sport Analytics.`
+        );
+      }
+      return;
+    }
+
+    if (type === 'USER_ACTION') {
+      const text = String(data.text || '').toLowerCase();
+
+      if (text.includes('analyse')) {
+        galikaSpeak(
+          `Je vois que tu ouvres une analyse, ${name}. Je peux t'aider à comprendre les indicateurs affichés.`
+        );
+      }
+      return;
+    }
+
+    if (type === 'league_sync') {
+      galikaSpeak(
+        `La synchronisation de la ligue est lancée, ${name}. Je peux suivre les informations qui arrivent.`
+      );
+      return;
+    }
+
+    if (type === 'match_selected') {
+      const home = data.homeTeam || 'Équipe 1';
+      const away = data.awayTeam || 'Équipe 2';
+
+      galikaSpeak(
+        `Tu consultes maintenant ${home} contre ${away}. Je peux t'expliquer les données de cette rencontre.`
+      );
+      return;
+    }
+
+    if (type === 'prediction_loaded') {
+      galikaSpeak(
+        `L'analyse du match est disponible, ${name}. Tu peux me demander de t'expliquer les indicateurs affichés.`
+      );
+    }
+  }
+
+  window.GalikaReact = galikaSmartReact;
+
   async function galikaEvent(type, data = {}) {
     const token = localStorage.getItem('token');
 

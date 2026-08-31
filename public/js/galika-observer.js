@@ -7,6 +7,10 @@
 
   window.GalikaObserver = {
     send(type, data = {}) {
+      if (window.GalikaReact) {
+        window.GalikaReact(type, data);
+      }
+
       fetch('/api/galika/context', {
         method: 'POST',
         headers: {

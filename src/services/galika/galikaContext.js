@@ -1,84 +1,79 @@
 'use strict';
 
-const context = {
-  users: new Map()
-};
+const pool = require('../../config/db');
 
-function setUser(user) {
-  if (!user || !user.id) return;
-
-  const id = String(user.id);
-
-  if (!context.users.has(id)) {
-    context.users.set(id, {
-      user: {
-        id: user.id,
-        name: user.name || 'Utilisateur',
-        role: user.role || 'user'
-      },
-      events: []
-    });
-  } else {
-    context.users.get(id).user = {
-      id: user.id,
-      name: user.name || 'Utilisateur',
-      role: user.role || 'user'
-    };
-  }
+async function setUser(user) {
+  return user || null;
 }
 
-function addEvent(userId, event) {
+async function addEvent(userId, event) {
   if (!userId || !event) return;
 
-  const id = String(userId);
+  await pool.query(
+    `INSERT INTO galika_events
+      (user_id, event_type, event_data)
+     VALUES ($1, $2, $3::jsonb)`,
+    [
+      userId,
+      event.type || 'unknown',
+      JSON.stringify(event.data || {})
+    ]
+  );
 
-  if (!context.users.has(id)) {
-    setUser({
-      id: userId,
-      name: 'Utilisateur',
-      role: 'user'
-    });
-  }
-
-  const userContext = context.users.get(id);
-
-  userContext.events.push({
-    type: event.type || 'unknown',
-    data: event.data || {},
-    timestamp: new Date().toISOString()
-  });
-
-  if (userContext.events.length > 100) {
-    userContext.events.shift();
-  }
+  await pool.query(
+    `DELETE FROM galika_events
+     WHERE user_id = $1
+     AND id NOT IN (
+       SELECT id
+       FROM galika_events
+       WHERE user_id = $1
+       ORDER BY created_at DESC
+       LIMIT 100
+     )`,
+    [userId]
+  );
 }
 
-function getUser(userId) {
-  const item = context.users.get(String(userId));
-  return item ? item.user : null;
+async function getUser(userId) {
+  if (!userId) return null;
+
+  const result = await pool.query(
+    `SELECT id, name, role
+     FROM users
+     WHERE id = $1`,
+    [userId]
+  );
+
+  return result.rows[0] || null;
 }
 
-function getRecentEvents(userId, limit = 20) {
-  const item = context.users.get(String(userId));
+async function getRecentEvents(userId, limit = 20) {
+  if (!userId) return [];
 
-  if (!item) return [];
+  const safeLimit = Math.min(Math.max(Number(limit) || 20, 1), 100);
 
-  return item.events.slice(-limit);
+  const result = await pool.query(
+    `SELECT
+       event_type AS type,
+       event_data AS data,
+       created_at AS timestamp
+     FROM galika_events
+     WHERE user_id = $1
+     ORDER BY created_at DESC
+     LIMIT $2`,
+    [userId, safeLimit]
+  );
+
+  return result.rows.reverse();
 }
 
-function getContext(userId) {
-  const item = context.users.get(String(userId));
-
-  if (!item) {
-    return {
-      user: null,
-      events: []
-    };
-  }
+async function getContext(userId) {
+  const user = await getUser(userId);
+  const events = await getRecentEvents(userId, 20);
 
   return {
-    user: item.user,
-    events: item.events.slice(-20)
+    user,
+    events
   };
 }
 

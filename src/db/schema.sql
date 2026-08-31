@@ -113,3 +113,16 @@ ALTER TABLE matches ADD COLUMN IF NOT EXISTS away_score INTEGER;
 ALTER TABLE combo_selections ADD COLUMN IF NOT EXISTS result_key VARCHAR(20);
 ALTER TABLE matches ADD COLUMN IF NOT EXISTS home_score INTEGER;
 ALTER TABLE matches ADD COLUMN IF NOT EXISTS away_score INTEGER;
+
+
+CREATE TABLE IF NOT EXISTS galika_events (
+  id BIGSERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  event_type VARCHAR(100) NOT NULL,
+  event_data JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_galika_events_user_created
+ON galika_events(user_id, created_at DESC);
+
