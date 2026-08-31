@@ -53,6 +53,13 @@ syncBtn.addEventListener('click', async () => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Erreur inconnue');
     showMessage(syncMessage, data.message, 'success');
+
+    if (window.GalikaObserver) {
+      window.GalikaObserver.send('league_sync', {
+        leagueId
+      });
+    }
+
     loadMatches();
   } catch (err) {
     showMessage(syncMessage, err.message, 'error');
@@ -120,6 +127,14 @@ function renderMatchCard(match) {
 }
 
 async function loadPrediction(matchId, match) {
+  if (window.GalikaObserver) {
+    window.GalikaObserver.send('match_selected', {
+      matchId,
+      homeTeam: match.homeTeam || match.home_team || '',
+      awayTeam: match.awayTeam || match.away_team || ''
+    });
+  }
+
   predictionSection.classList.remove('hidden');
   predictionSection.scrollIntoView({ behavior: 'smooth' });
 
@@ -138,6 +153,13 @@ async function loadPrediction(matchId, match) {
     }
     const p = await res.json();
     if (!res.ok) throw new Error(p.error || 'Erreur de prédiction');
+
+    if (window.GalikaObserver) {
+      window.GalikaObserver.send('prediction_loaded', {
+        matchId,
+        source: 'predictions'
+      });
+    }
     renderPrediction(match, p);
   } catch (err) {
     predictionContent.innerHTML = `<p class="message error">${err.message}</p>`;
