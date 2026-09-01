@@ -206,7 +206,10 @@
 
 
   button.addEventListener('click', function () {
-    alert('Bonjour ' + name + ' 👋 Je suis Galika.');
+    const isOpen = panel.style.display === 'flex';
+    panel.style.display = isOpen ? 'none' : 'flex';
+    const welcomeBox = document.getElementById('galika-welcome');
+    if (welcomeBox) welcomeBox.remove();
   });
 
   const style = document.createElement('style');
