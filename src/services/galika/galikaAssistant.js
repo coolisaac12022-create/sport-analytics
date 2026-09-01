@@ -2,6 +2,39 @@
 const { generateAIResponse } = require('./galikaAI');
 
 const { webSearch } = require('./webSearch');
+const { generateReport } = require('./galikaEngine');
+
+
+function getEngineAnalysis(context = {}) {
+  const match = context?.match || context?.currentMatch;
+
+  if (!match?.homeTeam || !match?.awayTeam) {
+    return null;
+  }
+
+  if (!match.homeStats || !match.awayStats) {
+    return null;
+  }
+
+  try {
+    return generateReport(
+      {
+        name: match.homeTeam,
+        recent: match.homeStats
+      },
+      {
+        name: match.awayTeam,
+        recent: match.awayStats
+      }
+    );
+  } catch (error) {
+    console.log(
+      'Moteur statistique Galika indisponible :',
+      error.message
+    );
+    return null;
+  }
+}
 
 function needsWebSearch(question = '') {
   const text = String(question).toLowerCase();
@@ -34,6 +67,8 @@ async function createResponse(user, question, context = {}) {
   const events = Array.isArray(context?.events)
     ? context.events
     : [];
+
+  const engineAnalysis = getEngineAnalysis(context);
 
   if (!text) {
     return `Je t'écoute ${name} 😊 Pose-moi une question.`;
@@ -222,6 +257,7 @@ async function createResponse(user, question, context = {}) {
       messages: context?.messages || [],
       context: {
         ...context,
+        engineAnalysis,
         user: {
           name,
           role: user?.role || 'user'
