@@ -1,4 +1,5 @@
 'use strict';
+const { generateAIResponse } = require('./galikaAI');
 
 const { webSearch } = require('./webSearch');
 
@@ -212,6 +213,27 @@ async function createResponse(user, question, context = {}) {
 
   if (page) {
     return `Je vois que tu consultes actuellement ${page}. Dis-moi ce que tu souhaites comprendre et je vais utiliser ce contexte pour t'aider.`;
+  }
+
+  // Dernier recours : moteur IA de Galika.
+  try {
+    const aiResponse = await generateAIResponse({
+      question: text,
+      messages: context?.messages || [],
+      context: {
+        ...context,
+        user: {
+          name,
+          role: user?.role || 'user'
+        }
+      }
+    });
+
+    if (aiResponse) {
+      return aiResponse;
+    }
+  } catch (error) {
+    console.log('Moteur IA Galika indisponible :', error.message);
   }
 
   return `Je t'écoute ${name} 👋 Pose-moi ta question. Je vais essayer de te donner une explication claire et simple.`;
