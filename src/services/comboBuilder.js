@@ -33,7 +33,7 @@ async function ensurePrediction(match) {
   const awayTeam = await sportsApi.getTeamByName(match.away_team_name);
   const homeResults = homeTeam ? await sportsApi.getLastResultsByTeam(homeTeam.idTeam) : [];
   const awayResults = awayTeam ? await sportsApi.getLastResultsByTeam(awayTeam.idTeam) : [];
-  const prediction = await predictMatch({ homeTeam: match.home_team_name, awayTeam: match.away_team_name, homeResults: homeResults, awayResults: awayResults });
+  const prediction = await predictMatch({ homeTeam: match.home_team_name, awayTeam: match.away_team_name, homeResults: homeResults, awayResults: awayResults, leagueName: match.league });
   const inserted = await pool.query(
     "INSERT INTO predictions (match_id, home_win_prob, draw_prob, away_win_prob, predicted_score_home, predicted_score_away, confidence, ai_analysis, engine, btts_yes_prob, over_1_5_prob, over_2_5_prob) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *",
     [match.id, prediction.homeWinProb, prediction.drawProb, prediction.awayWinProb, prediction.predictedScore.home, prediction.predictedScore.away, prediction.confidence, prediction.aiAnalysis, prediction.engine, prediction.bttsYesProb, prediction.over15Prob, prediction.over25Prob]

@@ -58,7 +58,8 @@ router.post('/:matchId', async (req, res) => {
       homeTeam: match.home_team_name,
       awayTeam: match.away_team_name,
       homeResults: homeResults,
-      awayResults: awayResults
+      awayResults: awayResults,
+      leagueName: match.league
     });
 
     const { rows } = await pool.query(
