@@ -74,6 +74,7 @@
 
     .galika-msg.bot {
       background: white;
+      color: #111827;
       border: 1px solid #e5e7eb;
       margin-right: 25px;
     }
