@@ -165,6 +165,18 @@ async function loadPrediction(matchId, match) {
       });
     }
     renderPrediction(match, p);
+    if (window.GalikaObserver) {
+      window.GalikaObserver.send('prediction_loaded', {
+        homeTeam: match.home_team_name,
+        awayTeam: match.away_team_name,
+        league: match.league,
+        homeWinProb: p.home_win_prob,
+        drawProb: p.draw_prob,
+        awayWinProb: p.away_win_prob,
+        predictedScoreHome: p.predicted_score_home,
+        predictedScoreAway: p.predicted_score_away
+      });
+    }
   } catch (err) {
     predictionContent.innerHTML = `<p class="message error">${err.message}</p>`;
   }

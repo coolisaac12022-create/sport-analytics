@@ -116,15 +116,26 @@ async function createResponse(user, question, context = {}) {
     lower.includes('ce matchs') ||
     lower.includes('ce match-là') ||
     lower.includes('ce match la') ||
-    lower.includes('match actuel')
+    lower.includes('match actuel') ||
+    lower.includes('favori') ||
+    lower.includes('qui va gagner') ||
+    lower.includes('pronostic')
   ) {
     const home = currentMatch.homeTeam || 'Équipe à domicile';
     const away = currentMatch.awayTeam || 'Équipe à l’extérieur';
-    const league = currentMatch.league
-      ? ` dans ${currentMatch.league}`
-      : '';
+    const league = currentMatch.league ? ` (${currentMatch.league})` : '';
 
-    return `Le match que je vois actuellement est ${home} contre ${away}${league}. Je peux t'expliquer les données et les indicateurs affichés.`;
+    if (currentMatch.homeWinProb != null) {
+      const homePct = Math.round(currentMatch.homeWinProb * 100);
+      const drawPct = Math.round(currentMatch.drawProb * 100);
+      const awayPct = Math.round(currentMatch.awayWinProb * 100);
+      const favori = homePct >= awayPct && homePct >= drawPct ? home : (awayPct >= drawPct ? away : null);
+      const favoriTxt = favori ? `${favori} est favori avec ${Math.max(homePct, awayPct)}% de chances.` : `C'est très équilibré, le nul est même l'issue la plus probable (${drawPct}%).`;
+
+      return `Pour ${home} contre ${away}${league} : ${favoriTxt} Score le plus probable selon notre modèle : ${currentMatch.predictedScoreHome}-${currentMatch.predictedScoreAway}. Domicile ${homePct}% / Nul ${drawPct}% / Extérieur ${awayPct}%. Rappel : ce sont des tendances statistiques, pas une garantie.`;
+    }
+
+    return `Le match que je vois actuellement est ${home} contre ${away}${league}. Ouvre l'analyse du match pour que je puisse te donner les vraies probabilités.`;
   }
 
   if (
