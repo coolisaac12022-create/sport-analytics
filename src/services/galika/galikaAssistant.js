@@ -79,25 +79,21 @@ async function createResponse(user, question, context = {}) {
    * Si la clé n'est pas encore configurée, Galika
    * continue normalement avec son intelligence locale.
    */
+  let webResults = null;
+
+  /*
+   * Recherche Web.
+   * Les résultats sont transmis à Claude afin que Galika
+   * puisse les analyser et formuler elle-même la réponse.
+   */
   if (needsWebSearch(text)) {
     try {
-      const search = await webSearch(text);
-
-      if (search.answer) {
-        return `Voici ce que j'ai trouvé, ${name} :\n\n${search.answer}`;
-      }
-
-      if (search.results.length) {
-        return `J'ai trouvé ces informations, ${name} :\n\n` +
-          search.results
-            .slice(0, 3)
-            .map((r, i) =>
-              `${i + 1}. ${r.title}\n${r.content.slice(0, 400)}`
-            )
-            .join('\n\n');
-      }
+      webResults = await webSearch(text);
     } catch (error) {
-      console.log('Recherche Web Galika indisponible :', error.message);
+      console.log(
+        'Recherche Web Galika indisponible :',
+        error.message
+      );
     }
   }
 
@@ -258,6 +254,7 @@ async function createResponse(user, question, context = {}) {
       context: {
         ...context,
         engineAnalysis,
+        webResults,
         user: {
           name,
           role: user?.role || 'user'
