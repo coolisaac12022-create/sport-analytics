@@ -8,6 +8,8 @@ const pool = require('../config/db');
 const {
   setUser,
   addEvent,
+  addMessage,
+  getRecentMessages,
   getRecentEvents,
   getContext
 } = require('../services/galika/galikaContext');
@@ -83,11 +85,18 @@ router.post('/ask', requireAuth, async (req, res) => {
       events: storedContext.events || []
     };
 
+    await addMessage(req.user.id, 'user', question);
+
+    const recentMessages = await getRecentMessages(req.user.id, 10);
+    galikaContext.messages = recentMessages;
+
     const answer = await createResponse(
       rows[0],
       question,
       galikaContext
     );
+
+    await addMessage(req.user.id, 'assistant', answer);
 
     res.json({
       success: true,

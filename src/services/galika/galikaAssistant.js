@@ -175,6 +175,30 @@ async function createResponse(user, question, context = {}) {
     return `Je peux t'aider à comprendre Sport Analytics, les matchs, les analyses, les statistiques et les fonctionnalités disponibles sur la page que tu consultes.`;
   }
 
+  if (lower.includes('cote') || lower.includes('cotes')) {
+    return `La cote, ${name}, c'est l'inverse de la probabilite calculee par notre modele (1 divise par la probabilite). Par exemple, une probabilite de 50% donne une cote de 2.00. Nos cotes viennent de notre propre calcul statistique (loi de Poisson), pas des bookmakers, donc elles peuvent differer de ce que tu vois sur Betclic ou 1xBet - c'est normal, c'est notre analyse independante.`;
+  }
+
+  if (lower.includes('xg') || lower.includes('buts attendus')) {
+    return `Le xG (buts attendus), ${name}, est une estimation du nombre de buts qu'une equipe devrait marquer selon sa forme recente et la solidite defensive de l'adversaire. Un xG de 2.1 signifie qu'on attend environ 2 buts de cette equipe, statistiquement.`;
+  }
+
+  if (lower.includes('but/but') || lower.includes('btts') || lower.includes('les deux equipes marquent')) {
+    return `But/But (BTTS), ${name}, c'est la probabilite que les DEUX equipes marquent au moins un but chacune dans le match, peu importe qui gagne. On la calcule a partir de notre modele de Poisson complet.`;
+  }
+
+  if (lower.includes('1,5') || lower.includes('2,5') || lower.includes('over') || lower.includes('under')) {
+    return `Les marches +1,5/-1,5 et +2,5/-2,5, ${name}, concernent le nombre TOTAL de buts dans le match (les deux equipes cumulees). +2,5 signifie qu'on attend au moins 3 buts au total ; -2,5 signifie 2 buts ou moins.`;
+  }
+
+  if (lower.includes('combine') || lower.includes('combiné')) {
+    return `Le combine du jour, ${name}, regroupe plusieurs matchs juges fiables par notre modele, choisis automatiquement pour atteindre une cote combinee d'au moins 10. Attention : combiner plusieurs matchs augmente le risque global, meme si chaque match pris seul semble sur.`;
+  }
+
+  if (lower.includes('fiable') || lower.includes('fiabilite') || lower.includes('confiance')) {
+    return `Nos previsions utilisent un modele de Poisson (methode utilisee par les vrais analystes sportifs), avec un lissage statistique pour eviter les erreurs sur peu de matchs, et une moyenne de buts adaptee a chaque championnat. Mais aucun modele ne peut garantir un resultat : le football reste imprevisible par nature.`;
+  }
+
   if (page) {
     return `Je vois que tu consultes actuellement ${page}. Dis-moi ce que tu souhaites comprendre et je vais utiliser ce contexte pour t'aider.`;
   }

@@ -77,9 +77,28 @@ async function getContext(userId) {
   };
 }
 
+async function addMessage(userId, role, content) {
+  if (!userId) return;
+  await pool.query(
+    `INSERT INTO galika_events (user_id, event_type, event_data) VALUES ($1, 'galika_message', $2::jsonb)`,
+    [userId, JSON.stringify({ role: role, content: content })]
+  );
+}
+
+async function getRecentMessages(userId, limit = 10) {
+  if (!userId) return [];
+  const result = await pool.query(
+    `SELECT event_data FROM galika_events WHERE user_id = $1 AND event_type = 'galika_message' ORDER BY created_at DESC LIMIT $2`,
+    [userId, limit]
+  );
+  return result.rows.map(function(r) { return r.event_data; }).reverse();
+}
+
 module.exports = {
   setUser,
   addEvent,
+  addMessage,
+  getRecentMessages,
   getUser,
   getRecentEvents,
   getContext
