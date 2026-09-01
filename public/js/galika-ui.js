@@ -191,6 +191,7 @@
       }
 
       addMessage(data.answer, 'bot');
+      galikaSpeak(data.answer);
 
     } catch (error) {
       messages.lastElementChild.remove();
