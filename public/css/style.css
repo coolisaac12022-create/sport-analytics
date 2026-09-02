@@ -1444,3 +1444,18 @@ button:hover{
 .footer{
   border-top-color:#ffffff0d;
 }
+
+/* Réduit l'espace du Hero */
+.hero{
+  min-height:440px;
+}
+.hero-inner{
+  gap:18px;
+}
+.hero-content{
+  max-width:620px;
+}
+.hero-player{
+  transform:scale(.86);
+  transform-origin:center;
+}
