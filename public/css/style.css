@@ -1159,3 +1159,28 @@ border-color:rgba(139,92,246,.3);
     font-size:.9rem;
   }
 }
+.hero{position:relative;overflow:hidden;min-height:500px;padding:60px 20px;background:radial-gradient(circle at 75% 35%,#5b21b655,transparent 35%),#070711}
+.hero-inner{max-width:1180px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:30px}
+.hero-content{max-width:680px}
+.hero-topline{display:flex;gap:10px;margin-bottom:20px}
+.hero-badge,.live-dot{padding:7px 12px;border-radius:20px;font-size:11px;font-weight:800}
+.hero-badge{color:#c4b5fd;background:#7c3aed22;border:1px solid #8b5cf644}
+.live-dot{color:#86efac;background:#22c55e18}
+.hero-title{margin:0;font-size:clamp(42px,6vw,76px);line-height:1;letter-spacing:-.04em;font-weight:900;color:#fff}
+.hero-accent{background:linear-gradient(90deg,#a78bfa,#6366f1,#38bdf8);-webkit-background-clip:text;color:transparent}
+.hero-tagline{margin:20px 0 8px;font-size:22px;font-weight:700;color:#f4f1ff}
+.hero-description{margin:0;color:#aaa8bb;font-size:15px;line-height:1.7}
+.hero-actions{display:flex;gap:12px;margin-top:25px}
+.hero-btn{text-decoration:none;padding:12px 18px;border-radius:12px;font-size:14px;font-weight:800}
+.hero-btn.primary{color:#fff;background:linear-gradient(135deg,#7c3aed,#4f46e5)}
+.hero-btn.secondary{color:#ddd;background:#ffffff0a;border:1px solid #ffffff18}
+.hero-player-svg{display:none}
+.hero-player{background:url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=700&q=85') center/cover;border-radius:24px;box-shadow:0 0 70px #7c3aed55;overflow:hidden}
+.hero-player:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,#09091acc,#7c3aed33,transparent 70%);pointer-events:none}
+.hero-player:before{content:"";position:absolute;inset:10px;border:1px solid #ffffff18;border-radius:18px;z-index:2;pointer-events:none}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:25px 0}
+.stat-card{padding:22px;border-radius:18px;background:#ffffff08;border:1px solid #ffffff12;box-shadow:0 12px 35px #0005}
+.stat-card span{font-size:22px}
+.stat-card strong{display:block;margin-top:8px;font-size:32px;color:#fff}
+.stat-card small{color:#aaa8bb}
+@media(max-width:650px){.stats-grid{grid-template-columns:1fr}}
