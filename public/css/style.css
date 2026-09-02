@@ -1854,3 +1854,22 @@ img,svg{max-width:100%}
   .stat-card small,.stat-card label{font-size:7px}
   .card{padding:11px}
 }
+
+/* TYPOGRAPHIE — LÉGÈREMENT PLUS LISIBLE */
+@media(max-width:700px){
+  .hero-description{font-size:13px}
+  .hero-badge,.live-dot{font-size:10px}
+  .hero-btn{font-size:12px}
+  .stat-card strong{font-size:20px}
+  .stat-card small,.stat-card label{font-size:9px}
+  .card h2{font-size:18px}
+  .hint{font-size:11px}
+  .teams{font-size:13px}
+  .date{font-size:10px}
+}
+@media(max-width:380px){
+  .hero-title{font-size:29px}
+  .hero-description{font-size:12px}
+  .stat-card strong{font-size:18px}
+  .card h2{font-size:17px}
+}
