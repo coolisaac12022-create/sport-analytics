@@ -1459,3 +1459,87 @@ button:hover{
   transform:scale(.86);
   transform-origin:center;
 }
+
+/* HERO PRO — FINTECH / SPORTS ANALYTICS */
+.hero{
+  min-height:390px;
+  padding:34px 20px;
+  background:
+    radial-gradient(circle at 78% 50%,#e21d2e28,transparent 28%),
+    linear-gradient(110deg,#050505 0%,#0d0d0d 55%,#160609 100%);
+}
+.hero-inner{
+  max-width:1180px;
+  min-height:320px;
+  gap:10px;
+}
+.hero-content{
+  max-width:600px;
+}
+.hero-topline{
+  margin-bottom:12px;
+}
+.hero-title{
+  font-size:clamp(38px,5vw,64px);
+  line-height:.98;
+  margin-bottom:12px;
+}
+.hero-tagline{
+  font-size:20px;
+  margin-bottom:8px;
+}
+.hero-description{
+  max-width:520px;
+  margin-bottom:18px;
+}
+.hero-actions{
+  margin-top:12px;
+}
+.hero-player{
+  width:300px;
+  height:300px;
+  margin-right:25px;
+  transform:scale(.82);
+}
+.hero-orbit{
+  opacity:.45;
+}
+.hero-player-glow{
+  background:#e21d2e;
+  opacity:.14;
+}
+
+/* Indicateur façon plateforme financière */
+.hero-content:after{
+  content:"LIVE  •  ANALYTICS ENGINE     +12.4%     98.2% DATA";
+  display:block;
+  width:max-content;
+  max-width:100%;
+  margin-top:22px;
+  padding:8px 12px;
+  border-left:2px solid #e21d2e;
+  background:#ffffff06;
+  color:#888;
+  font-size:9px;
+  letter-spacing:.12em;
+  font-weight:700;
+}
+
+@media(max-width:700px){
+  .hero{
+    min-height:auto;
+    padding:28px 16px 34px;
+  }
+  .hero-inner{
+    min-height:auto;
+  }
+  .hero-player{
+    display:none;
+  }
+  .hero-title{
+    font-size:42px;
+  }
+  .hero-content:after{
+    font-size:8px;
+  }
+}
