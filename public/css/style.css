@@ -1543,3 +1543,122 @@ button:hover{
     font-size:8px;
   }
 }
+
+/* HERO LIVE TERMINAL */
+.hero{
+  min-height:350px;
+  padding:28px 20px;
+  background:
+    radial-gradient(circle at 82% 48%,#e21d2e30,transparent 25%),
+    linear-gradient(105deg,#050505,#0c0c0c 58%,#170608);
+}
+.hero-inner{
+  max-width:1180px;
+  min-height:290px;
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  align-items:center;
+  gap:15px;
+}
+.hero-title{
+  font-size:clamp(38px,5vw,62px);
+  line-height:.95;
+  letter-spacing:-.04em;
+  margin:8px 0 16px;
+}
+.hero-accent{
+  color:#ff2638;
+}
+.hero-tagline{
+  display:none;
+}
+.hero-description{
+  max-width:500px;
+  color:#bdbdbd;
+  font-size:15px;
+}
+.hero-actions{
+  margin-top:18px;
+}
+.hero-player{
+  position:relative;
+  width:290px;
+  height:290px;
+  justify-self:center;
+  transform:none;
+  border-radius:50%;
+  border:1px solid #ffffff14;
+  background:radial-gradient(circle,#271014 0%,#10090a 52%,#080808 72%);
+  box-shadow:0 0 70px #e21d2e22,inset 0 0 50px #e21d2e12;
+}
+.hero-player:before{
+  content:"LIVE";
+  position:absolute;
+  top:28px;
+  right:12px;
+  padding:5px 9px;
+  border-radius:20px;
+  background:#e21d2e;
+  color:#fff;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.12em;
+  z-index:4;
+}
+.hero-player:after{
+  content:"AI  •  63%";
+  position:absolute;
+  bottom:30px;
+  left:5px;
+  padding:9px 13px;
+  border:1px solid #ffffff18;
+  border-radius:10px;
+  background:#111c;
+  color:#fff;
+  font-size:10px;
+  font-weight:800;
+  box-shadow:0 10px 25px #0008;
+}
+.hero-player-svg{
+  width:210px;
+  height:210px;
+}
+.hero-content:after{
+  content:"12 MATCHS   •   8 PRÉDICTIONS   •   2.45 COTE";
+  display:block;
+  width:max-content;
+  margin-top:20px;
+  padding:8px 11px;
+  border-left:2px solid #e21d2e;
+  background:#ffffff05;
+  color:#999;
+  font-size:9px;
+  letter-spacing:.1em;
+  font-weight:800;
+}
+
+@media(max-width:700px){
+  .hero{
+    min-height:auto;
+    padding:26px 16px 30px;
+  }
+  .hero-inner{
+    min-height:auto;
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .hero-player{
+    align-self:center;
+    width:220px;
+    height:220px;
+    order:-1;
+  }
+  .hero-player-svg{
+    width:160px;
+    height:160px;
+  }
+  .hero-title{
+    font-size:42px;
+  }
+}
