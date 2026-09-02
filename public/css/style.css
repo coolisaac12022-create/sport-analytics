@@ -1699,3 +1699,158 @@ button:hover{
   .date{font-size:9px}
   .combo-pick{padding:9px}
 }
+
+/* PREDIZE — RESPONSIVE FINAL */
+*{box-sizing:border-box}
+html,body{width:100%;overflow-x:hidden}
+img,svg{max-width:100%}
+
+.hero-inner,.container{
+  width:min(1180px,calc(100% - 32px));
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.hero-inner{
+  grid-template-columns:minmax(0,1fr) minmax(260px,.65fr);
+}
+
+.hero-content{min-width:0}
+.hero-player{max-width:100%}
+
+.stats-grid{
+  width:100%;
+}
+
+.matches-grid{
+  width:100%;
+}
+
+.match-item{
+  min-width:0;
+}
+
+@media(max-width:900px){
+  .hero-inner{
+    grid-template-columns:minmax(0,1fr) 240px;
+    gap:8px;
+  }
+  .hero-title{font-size:44px}
+  .hero-player{
+    width:220px;
+    height:220px;
+  }
+}
+
+@media(max-width:700px){
+  .hero{
+    padding:18px 0 24px;
+  }
+
+  .hero-inner{
+    width:calc(100% - 20px);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .hero-content{
+    width:100%;
+    text-align:center;
+  }
+
+  .hero-topline{
+    justify-content:center;
+  }
+
+  .hero-title{
+    font-size:clamp(28px,9vw,36px);
+    margin:6px 0 8px;
+  }
+
+  .hero-description{
+    max-width:420px;
+    margin-left:auto;
+    margin-right:auto;
+    font-size:12px;
+  }
+
+  .hero-actions{
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  .hero-player{
+    order:-1;
+    width:150px;
+    height:150px;
+    margin:auto;
+  }
+
+  .hero-player-svg{
+    width:105px;
+    height:105px;
+  }
+
+  .container{
+    width:calc(100% - 20px);
+  }
+
+  .stats-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:7px;
+  }
+
+  .stat-card{
+    min-width:0;
+    padding:10px 5px;
+  }
+
+  .stat-card strong{
+    font-size:18px;
+  }
+
+  .card{
+    width:100%;
+    padding:14px;
+  }
+
+  .form-row{
+    display:flex;
+    width:100%;
+  }
+
+  .form-row input{
+    min-width:0;
+    flex:1;
+  }
+
+  .form-row button{
+    flex-shrink:0;
+  }
+
+  .calendar-nav{
+    gap:6px;
+    flex-wrap:wrap;
+  }
+
+  .calendar-date-label{
+    flex:1;
+    text-align:center;
+    min-width:100px;
+  }
+
+  .matches-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:380px){
+  .hero-title{font-size:27px}
+  .hero-description{font-size:11px}
+  .hero-btn{font-size:10px;padding:7px 9px}
+  .stats-grid{gap:4px}
+  .stat-card strong{font-size:16px}
+  .stat-card small,.stat-card label{font-size:7px}
+  .card{padding:11px}
+}
