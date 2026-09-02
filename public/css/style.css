@@ -4,11 +4,12 @@
   --card-bg: #10172a;
   --card-bg-hover: #151f38;
   --surface: #1a2440;
-  --accent: #00e58f;
-  --accent-glow: rgba(0, 229, 143, 0.25);
+  --accent: #8b5cf6;
+  --accent-glow: rgba(139, 92, 246, 0.3);
   --accent-2: #4d9fff;
-  --accent-2-glow: rgba(77, 159, 255, 0.25);
+  --accent-2-glow: rgba(77, 159, 255, 0.3);
   --gold: #ffb020;
+  --purple-blue: linear-gradient(135deg, #8b5cf6, #4d9fff);
   --text: #f4f7fb;
   --text-muted: #8b93a7;
   --danger: #ff4d6a;
@@ -19,8 +20,8 @@
 
 body {
   background:
-    radial-gradient(circle at 15% 0%, rgba(0,229,143,0.08), transparent 40%),
-    radial-gradient(circle at 85% 20%, rgba(77,159,255,0.08), transparent 40%),
+    radial-gradient(circle at 15% 0%, rgba(139,92,246,0.12), transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(77,159,255,0.12), transparent 45%),
     var(--bg) !important;
 }
 
@@ -58,7 +59,9 @@ body {
 }
 
 .card {
-  background: var(--card-bg);
+  background: rgba(16, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 22px;
@@ -66,7 +69,7 @@ body {
   transition: border-color 0.25s ease, transform 0.25s ease;
 }
 .card:hover {
-  border-color: rgba(0, 229, 143, 0.25);
+  border-color: rgba(139, 92, 246, 0.35);
 }
 
 .card h2 {
