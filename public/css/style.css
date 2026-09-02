@@ -1,12 +1,33 @@
 :root {
-  --bg: #0f172a;
-  --card-bg: #1e293b;
-  --accent: #22c55e;
-  --accent-2: #38bdf8;
-  --text: #f1f5f9;
-  --text-muted: #94a3b8;
-  --danger: #ef4444;
-  --radius: 12px;
+  --bg: #05070d;
+  --bg-elevated: #0a0e1a;
+  --card-bg: #10172a;
+  --card-bg-hover: #151f38;
+  --surface: #1a2440;
+  --accent: #00e58f;
+  --accent-glow: rgba(0, 229, 143, 0.25);
+  --accent-2: #4d9fff;
+  --accent-2-glow: rgba(77, 159, 255, 0.25);
+  --gold: #ffb020;
+  --text: #f4f7fb;
+  --text-muted: #8b93a7;
+  --danger: #ff4d6a;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --border: rgba(255,255,255,0.08);
+}
+
+body {
+  background:
+    radial-gradient(circle at 15% 0%, rgba(0,229,143,0.08), transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(77,159,255,0.08), transparent 40%),
+    var(--bg) !important;
+}
+
+h1, h2, h3 { letter-spacing: -0.02em; }
+
+.stat-card span, .combo-conf, .pick-badge, .odds-row strong {
+  font-variant-numeric: tabular-nums;
 }
 
 * { box-sizing: border-box; }
@@ -38,9 +59,14 @@ body {
 
 .card {
   background: var(--card-bg);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  padding: 22px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.card:hover {
+  border-color: rgba(0, 229, 143, 0.25);
 }
 
 .card h2 {
@@ -67,17 +93,19 @@ input[type="text"] {
 }
 
 button {
-  padding: 10px 18px;
+  padding: 11px 20px;
   border: none;
-  border-radius: 8px;
-  background: var(--accent);
-  color: #0f172a;
-  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--accent), #00c47a);
+  color: #04140c;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  transition: opacity 0.15s;
+  box-shadow: 0 4px 16px var(--accent-glow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-button:hover { opacity: 0.85; }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
+button:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
+button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 .message { min-height: 20px; font-size: 0.9rem; }
 .message.error { color: var(--danger); }
@@ -125,9 +153,10 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   justify-content: center;
   color: #0f172a;
 }
-.prob-home { background: var(--accent); }
-.prob-draw { background: #facc15; }
-.prob-away { background: var(--accent-2); }
+.prob-home { background: linear-gradient(135deg, var(--accent), #00c47a); }
+.prob-draw { background: linear-gradient(135deg, var(--gold), #e69500); }
+.prob-away { background: linear-gradient(135deg, var(--accent-2), #2b7fe6); }
+.prob-bar span { text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
 
 .analysis-box {
   background: #0f172a;
@@ -217,9 +246,10 @@ button.danger { background: var(--danger); color: #fff; }
 }
 .stat-card span {
   display: block;
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2.4rem;
+  font-weight: 800;
   color: var(--accent);
+  text-shadow: 0 0 24px var(--accent-glow);
 }
 .stat-card label {
   color: var(--text-muted);
