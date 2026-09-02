@@ -212,7 +212,11 @@ function renderPrediction(match, p) {
       <span>Cote X : <strong>${drawOdds}</strong></span>
       <span>Cote 2 : <strong>${awayOdds}</strong></span>
     </div>
-    <p>Score probable : <strong>${p.predicted_score_home} - ${p.predicted_score_away}</strong> (confiance ${p.confidence}%)</p>
+    <div class="score-prediction">
+      <span>Score probable</span>
+      <span class="score">${p.predicted_score_home} - ${p.predicted_score_away}</span>
+      <span>Confiance : <strong class="confidence-value">${p.confidence}%</strong></span>
+    </div>
     ${p.ai_analysis ? `<div class="analysis-box">${p.ai_analysis}</div>` : ''}
     ${bttsYesPct !== null ? `
       <button id="toggleMarketsBtn" class="secondary small">Voir plus de statistiques</button>
