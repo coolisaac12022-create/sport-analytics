@@ -1664,3 +1664,38 @@ button:hover{
 }
 
 @media(max-width:700px){.container{width:calc(100% - 20px)}.hero{padding:22px 12px 26px}.hero-title{font-size:34px}.hero-description{font-size:13px}.hero-btn{padding:9px 12px;font-size:12px}.hero-player{width:180px;height:180px}.hero-player-svg{width:135px;height:135px}.stats-grid{gap:8px}.stat-card{padding:12px 8px;min-height:70px}.stat-card strong{font-size:20px}.stat-card small,.stat-card label{font-size:9px}.card{padding:15px;border-radius:14px}.card h2{font-size:18px}.hint{font-size:11px}.match-item{padding:12px}}
+/* RESPONSIVE MOBILE — PROPORTIONS */
+@media (max-width:700px){
+  .hero{min-height:0;padding:18px 12px 22px}
+  .hero-inner{min-height:0;display:flex;gap:12px}
+  .hero-content{width:100%;max-width:none}
+  .hero-topline{gap:6px;margin-bottom:8px}
+  .hero-badge,.live-dot{padding:5px 8px;font-size:9px}
+  .hero-title{font-size:30px;line-height:1.02;margin:5px 0 9px}
+  .hero-description{font-size:12px;line-height:1.35;margin:0 0 12px}
+  .hero-actions{display:flex;gap:7px;margin:10px 0}
+  .hero-btn{padding:8px 10px;font-size:11px}
+  .hero-player{width:155px;height:155px;margin:2px auto 4px}
+  .hero-player-svg{width:112px;height:112px}
+  .hero-player:before{top:12px;right:2px;padding:4px 7px;font-size:7px}
+  .hero-player:after{bottom:12px;left:-4px;padding:6px 8px;font-size:7px}
+  .hero-content:after{margin-top:10px;padding:5px 7px;font-size:6px}
+
+  .container{width:calc(100% - 16px)}
+  .stats-grid{grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0}
+  .stat-card{min-height:58px;padding:9px 5px;border-radius:11px}
+  .stat-card span{font-size:15px}
+  .stat-card strong{font-size:18px}
+  .stat-card small,.stat-card label{font-size:8px;line-height:1.1}
+
+  .card{padding:13px;border-radius:12px;margin-bottom:12px}
+  .card h2{font-size:16px;margin-bottom:7px}
+  .hint{font-size:10px;line-height:1.35}
+  .form-row{gap:6px}
+  input,button{min-height:34px;font-size:11px}
+  .matches-grid{gap:8px}
+  .match-item{padding:10px;border-radius:11px}
+  .teams{font-size:12px}
+  .date{font-size:9px}
+  .combo-pick{padding:9px}
+}
