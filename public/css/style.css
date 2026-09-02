@@ -1346,3 +1346,101 @@ button{border:0;cursor:pointer;font:inherit}
 #usersTable .danger{
   background:#8b1118;
 }
+
+/* PREDIZE VISITEUR — ROUGE / BLANC / NOIR */
+body{
+  background:#080808;
+  color:#f7f7f7;
+}
+.hero{
+  background:
+    radial-gradient(circle at 75% 35%,#e21d2e33,transparent 32%),
+    linear-gradient(120deg,#050505,#140609,#080808);
+  border-bottom:1px solid #e21d2e22;
+}
+.hero-accent{
+  color:#ff2638;
+}
+.hero-badge{
+  color:#fff;
+  background:#e21d2e18;
+  border-color:#ff263855;
+}
+.live-dot{
+  color:#ff6975;
+}
+.hero-btn.primary{
+  background:#e21d2e;
+  color:#fff;
+  box-shadow:0 10px 30px #e21d2e44;
+}
+.hero-btn.primary:hover{
+  background:#ff3040;
+  transform:translateY(-2px);
+}
+.hero-btn.secondary{
+  background:#fff;
+  color:#090909;
+}
+.card{
+  background:linear-gradient(145deg,#171717,#0d0d0d);
+  border-color:#ffffff12;
+}
+.stats-grid .stat-card{
+  background:linear-gradient(145deg,#181818,#0b0b0b);
+  border-color:#ffffff12;
+}
+.stat-card strong{
+  color:#fff;
+}
+.stat-card span{
+  color:#ff2638;
+}
+h2{
+  color:#fff;
+}
+.hint{
+  color:#a5a5a5;
+}
+button{
+  transition:.2s ease;
+}
+button:hover{
+  transform:translateY(-1px);
+}
+#syncBtn,
+.toggleMarketsBtn{
+  background:#e21d2e;
+  color:#fff;
+}
+#syncBtn:hover,
+.toggleMarketsBtn:hover{
+  background:#ff3040;
+}
+.matches-grid .match-item{
+  background:#121212;
+  border-color:#ffffff10;
+}
+.matches-grid .match-item:hover{
+  border-color:#e21d2e66;
+  box-shadow:0 12px 35px #e21d2e18;
+}
+.pick-badge,
+.engine-tag{
+  background:#e21d2e18;
+  color:#ff5260;
+  border-color:#e21d2e44;
+}
+.prob-home,
+.prob-away{
+  background:#e21d2e;
+}
+.score-prediction{
+  color:#ff3948;
+}
+.confidence-value{
+  color:#ff5260;
+}
+.footer{
+  border-top-color:#ffffff0d;
+}
