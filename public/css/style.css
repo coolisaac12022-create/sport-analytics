@@ -1662,3 +1662,5 @@ button:hover{
     font-size:42px;
   }
 }
+
+@media(max-width:700px){.container{width:calc(100% - 20px)}.hero{padding:22px 12px 26px}.hero-title{font-size:34px}.hero-description{font-size:13px}.hero-btn{padding:9px 12px;font-size:12px}.hero-player{width:180px;height:180px}.hero-player-svg{width:135px;height:135px}.stats-grid{gap:8px}.stat-card{padding:12px 8px;min-height:70px}.stat-card strong{font-size:20px}.stat-card small,.stat-card label{font-size:9px}.card{padding:15px;border-radius:14px}.card h2{font-size:18px}.hint{font-size:11px}.match-item{padding:12px}}
