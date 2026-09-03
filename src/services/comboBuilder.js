@@ -103,7 +103,14 @@ async function getCombo(dateStr) {
   const comboRes = await pool.query("SELECT * FROM daily_combos WHERE combo_date = $1", [dateStr]);
   if (comboRes.rows.length === 0) return null;
   const combo = comboRes.rows[0];
-  const selectionsRes = await pool.query("SELECT cs.*, m.home_team_name, m.away_team_name, m.match_date, m.status, m.home_score, m.away_score FROM combo_selections cs JOIN matches m ON m.id = cs.match_id WHERE cs.combo_id = $1 ORDER BY cs.pick_type ASC, cs.confidence DESC", [combo.id]);
+  const selectionsRes = await pool.query(
+    "SELECT cs.*, m.home_team_name, m.away_team_name, m.match_date, m.status, m.home_score, m.away_score, p.btts_yes_prob, p.over_1_5_prob, p.over_2_5_prob " +
+    "FROM combo_selections cs " +
+    "JOIN matches m ON m.id = cs.match_id " +
+    "LEFT JOIN LATERAL (SELECT btts_yes_prob, over_1_5_prob, over_2_5_prob FROM predictions WHERE match_id = cs.match_id ORDER BY created_at DESC LIMIT 1) p ON true " +
+    "WHERE cs.combo_id = $1 ORDER BY cs.pick_type ASC, cs.confidence DESC",
+    [combo.id]
+  );
   const picks = selectionsRes.rows.map(function(row) { row.result = evaluatePick(row); return row; });
   return { combo: combo, picks: picks };
 }

@@ -45,6 +45,7 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log("Serveur lance sur le port " + PORT);
   autoSyncAllLeagues().catch(function(err) { console.error('Erreur sync initiale :', err.message); });
+  updateFinishedResults().catch(function(err) { console.error('Erreur mise a jour resultats initiale :', err.message); });
 });
 
 cron.schedule('0 8 * * *', async () => {

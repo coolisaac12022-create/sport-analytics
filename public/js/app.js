@@ -279,12 +279,23 @@ function renderCombo(data) {
   const renderList = (list) => list.map((p) => {
     const result = p.result || 'pending';
     const badge = result === 'won' ? 'GAGNE' : (result === 'lost' ? 'PERDU' : 'EN COURS');
+    const bttsPct = p.btts_yes_prob != null ? Math.round(p.btts_yes_prob * 100) : null;
+    const over15Pct = p.over_1_5_prob != null ? Math.round(p.over_1_5_prob * 100) : null;
+    const over25Pct = p.over_2_5_prob != null ? Math.round(p.over_2_5_prob * 100) : null;
+    const extra = bttsPct !== null ? `
+      <div class="combo-extra-markets">
+        <span>But/But : <strong>${bttsPct}%</strong></span>
+        <span>+1,5 : <strong>${over15Pct}%</strong></span>
+        <span>+2,5 : <strong>${over25Pct}%</strong></span>
+      </div>
+    ` : '';
     return `
     <div class="combo-pick ${result}">
       <span class="combo-teams">${p.home_team_name || p.homeTeam} vs ${p.away_team_name || p.awayTeam}</span>
       <span class="combo-label">${p.pick_label || p.label}</span>
       <span class="combo-conf">${Math.round(p.confidence)}%</span>
       <span class="pick-badge ${result}">${badge}</span>
+      ${extra}
     </div>
   `;
   }).join('');
