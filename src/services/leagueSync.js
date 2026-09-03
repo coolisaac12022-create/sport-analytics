@@ -20,7 +20,7 @@ function getConfiguredLeagueIds() {
   if (fromEnv) {
     return fromEnv.split(',').map(function(id) { return id.trim(); }).filter(Boolean);
   }
-  return ['4328', '4335', '4332', '4331', '4334'];
+  return ['4328', '4335', '4332', '4331', '4334', '4346', '4351', '4339', '4340', '4344', '4347', '4350', '4354'];
 }
 
 async function autoSyncAllLeagues() {
