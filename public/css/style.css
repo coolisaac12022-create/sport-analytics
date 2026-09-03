@@ -2042,3 +2042,43 @@ body {
   }
 }
 
+
+/* ===== ONGLETS ANALYSE DE MATCH ===== */
+.match-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin: 16px 0;
+  padding-bottom: 4px;
+}
+.tab-btn {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border, rgba(255,255,255,.09));
+  color: var(--text-muted, #9aa0b4);
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab-btn.active {
+  color: #fff;
+  background: linear-gradient(135deg, var(--purple, #8b5cf6), var(--blue, #4d9fff));
+  border-color: transparent;
+}
+.tab-panel.hidden { display: none; }
+.coming-soon {
+  color: var(--gold, #ffb020);
+  font-size: .76rem;
+  font-weight: 600;
+  font-style: italic;
+}
+.coming-soon-block {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--muted, #9298ad);
+  font-size: .88rem;
+  font-style: italic;
+}

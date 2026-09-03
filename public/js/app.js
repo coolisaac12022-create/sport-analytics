@@ -181,59 +181,73 @@ function renderPrediction(match, p) {
   const homePct = Math.round(p.home_win_prob * 100);
   const drawPct = Math.round(p.draw_prob * 100);
   const awayPct = 100 - homePct - drawPct;
-  const homeOdds = toOdds(p.home_win_prob);
-  const drawOdds = toOdds(p.draw_prob);
-  const awayOdds = toOdds(p.away_win_prob);
-
   const bttsYesPct = p.btts_yes_prob != null ? Math.round(p.btts_yes_prob * 100) : null;
   const over15Pct = p.over_1_5_prob != null ? Math.round(p.over_1_5_prob * 100) : null;
   const over25Pct = p.over_2_5_prob != null ? Math.round(p.over_2_5_prob * 100) : null;
+  const xgHome = p.expected_goals_home != null ? p.expected_goals_home : null;
+  const xgAway = p.expected_goals_away != null ? p.expected_goals_away : null;
 
   predictionContent.innerHTML = `
     <span class="engine-tag">${p.engine === 'ai' ? 'Analyse IA' : 'Moteur statistique'}</span>
     <h3>${match.home_team_name} vs ${match.away_team_name}</h3>
-    <div class="prob-bar">
-      <span class="prob-home" style="width:${homePct}%">${homePct}%</span>
-      <span class="prob-draw" style="width:${drawPct}%">${drawPct}%</span>
-      <span class="prob-away" style="width:${awayPct}%">${awayPct}%</span>
+
+    <div class="match-tabs">
+      <button class="tab-btn active" data-tab="analyse">Analyse</button>
+      <button class="tab-btn" data-tab="stats">Stats</button>
+      <button class="tab-btn" data-tab="compos">Compos</button>
+      <button class="tab-btn" data-tab="h2h">H2H</button>
+      <button class="tab-btn" data-tab="forme">Forme</button>
     </div>
-    <div class="odds-row">
-      <span>1 : <strong>${homePct}%</strong></span>
-      <span>X : <strong>${drawPct}%</strong></span>
-      <span>2 : <strong>${awayPct}%</strong></span>
-      <span>1X : <strong>${Math.round((p.home_win_or_draw_prob ?? (p.home_win_prob + p.draw_prob)) * 100)}%</strong></span>
-    </div>
-    <div class="score-prediction">
-      <span>Score probable</span>
-      <span class="score">${p.predicted_score_home} - ${p.predicted_score_away}</span>
-      <span>Confiance : <strong class="confidence-value">${p.confidence}%</strong></span>
-    </div>
-    ${p.ai_analysis ? `<div class="analysis-box">${p.ai_analysis}</div>` : ''}
-    ${bttsYesPct !== null ? `
-      <button id="toggleMarketsBtn" class="secondary small">Voir plus de statistiques</button>
-      <div id="extraMarkets" class="hidden">
-        <div class="market-row">
-          <span>But/But (les 2 equipes marquent)</span>
-          <span><strong>Oui ${bttsYesPct}%</strong> / Non ${100 - bttsYesPct}%</span>
-        </div>
-        <div class="market-row">
-          <span>+1,5 / -1,5 buts</span>
-          <span><strong>+1,5 : ${over15Pct}%</strong> / -1,5 : ${100 - over15Pct}%</span>
-        </div>
-        <div class="market-row">
-          <span>+2,5 / -2,5 buts</span>
-          <span><strong>+2,5 : ${over25Pct}%</strong> / -2,5 : ${100 - over25Pct}%</span>
-        </div>
+
+    <div class="tab-panel" data-panel="analyse">
+      <div class="prob-bar">
+        <span class="prob-home" style="width:${homePct}%">${homePct}%</span>
+        <span class="prob-draw" style="width:${drawPct}%">${drawPct}%</span>
+        <span class="prob-away" style="width:${awayPct}%">${awayPct}%</span>
       </div>
-    ` : ''}
+      <div class="score-prediction">
+        <span>Score probable</span>
+        <span class="score">${p.predicted_score_home} - ${p.predicted_score_away}</span>
+        <span>Confiance : <strong class="confidence-value">${p.confidence}%</strong></span>
+      </div>
+      ${p.ai_analysis ? `<div class="analysis-box">${p.ai_analysis}</div>` : ''}
+    </div>
+
+    <div class="tab-panel hidden" data-panel="stats">
+      <div class="market-row"><span>xG (buts attendus)</span><span><strong>${xgHome ?? '-'} - ${xgAway ?? '-'}</strong></span></div>
+      ${bttsYesPct !== null ? `
+      <div class="market-row"><span>But/But</span><span><strong>Oui ${bttsYesPct}%</strong> / Non ${100 - bttsYesPct}%</span></div>
+      <div class="market-row"><span>+1,5 / -1,5 buts</span><span><strong>${over15Pct}%</strong> / ${100 - over15Pct}%</span></div>
+      <div class="market-row"><span>+2,5 / -2,5 buts</span><span><strong>${over25Pct}%</strong> / ${100 - over25Pct}%</span></div>
+      ` : ''}
+      <div class="market-row"><span>Corners</span><span class="coming-soon">Bientot disponible (API premium)</span></div>
+      <div class="market-row"><span>Cartons</span><span class="coming-soon">Bientot disponible (API premium)</span></div>
+    </div>
+
+    <div class="tab-panel hidden" data-panel="compos">
+      <p class="coming-soon-block">Les compositions officielles seront disponibles prochainement, des qu'un acces API premium sera active.</p>
+    </div>
+
+    <div class="tab-panel hidden" data-panel="h2h">
+      <p class="coming-soon-block">L'historique des confrontations directes sera disponible prochainement, des qu'un acces API premium sera active.</p>
+    </div>
+
+    <div class="tab-panel hidden" data-panel="forme">
+      <div class="market-row"><span>${match.home_team_name}</span><span><strong>${p.home_form_points != null ? p.home_form_points + ' pts / ' + p.home_form_played + ' matchs' : 'Donnees limitees'}</strong></span></div>
+      <div class="market-row"><span>${match.away_team_name}</span><span><strong>${p.away_form_points != null ? p.away_form_points + ' pts / ' + p.away_form_played + ' matchs' : 'Donnees limitees'}</strong></span></div>
+    </div>
   `;
 
-  const toggleBtn = document.getElementById('toggleMarketsBtn');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      document.getElementById('extraMarkets').classList.toggle('hidden');
+  const tabBtns = predictionContent.querySelectorAll('.tab-btn');
+  tabBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      tabBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      predictionContent.querySelectorAll('.tab-panel').forEach(function(panel) {
+        panel.classList.toggle('hidden', panel.dataset.panel !== btn.dataset.tab);
+      });
     });
-  }
+  });
 }
 
 function showMessage(el, text, type) {
