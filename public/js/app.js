@@ -154,16 +154,6 @@ async function loadPrediction(matchId, match) {
     const p = await res.json();
     if (!res.ok) throw new Error(p.error || 'Erreur de prédiction');
 
-    if (window.GalikaObserver) {
-      window.GalikaObserver.send('prediction_loaded', {
-        matchId,
-        source: 'predictions',
-        homeTeam: match.homeTeam || match.home_team || match.home_team_name || '',
-        awayTeam: match.awayTeam || match.away_team || match.away_team_name || '',
-        league: match.league || '',
-        page: window.location.pathname
-      });
-    }
     renderPrediction(match, p);
     if (window.GalikaObserver) {
       window.GalikaObserver.send('prediction_loaded', {
@@ -208,9 +198,10 @@ function renderPrediction(match, p) {
       <span class="prob-away" style="width:${awayPct}%">${awayPct}%</span>
     </div>
     <div class="odds-row">
-      <span>Cote 1 : <strong>${homeOdds}</strong></span>
-      <span>Cote X : <strong>${drawOdds}</strong></span>
-      <span>Cote 2 : <strong>${awayOdds}</strong></span>
+      <span>1 : <strong>${homePct}%</strong></span>
+      <span>X : <strong>${drawPct}%</strong></span>
+      <span>2 : <strong>${awayPct}%</strong></span>
+      <span>1X : <strong>${Math.round((p.home_win_or_draw_prob ?? (p.home_win_prob + p.draw_prob)) * 100)}%</strong></span>
     </div>
     <div class="score-prediction">
       <span>Score probable</span>

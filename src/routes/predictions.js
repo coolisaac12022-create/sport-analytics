@@ -63,12 +63,13 @@ router.post('/:matchId', async (req, res) => {
     });
 
     const { rows } = await pool.query(
-      "INSERT INTO predictions (match_id, home_win_prob, draw_prob, away_win_prob, predicted_score_home, predicted_score_away, confidence, ai_analysis, engine, btts_yes_prob, over_1_5_prob, over_2_5_prob) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *",
+      "INSERT INTO predictions (match_id, home_win_prob, draw_prob, away_win_prob, home_win_or_draw_prob, predicted_score_home, predicted_score_away, confidence, ai_analysis, engine, btts_yes_prob, over_1_5_prob, over_2_5_prob) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING *",
       [
         matchId,
         prediction.homeWinProb,
         prediction.drawProb,
         prediction.awayWinProb,
+        prediction.homeWinOrDrawProb,
         prediction.predictedScore.home,
         prediction.predictedScore.away,
         prediction.confidence,
