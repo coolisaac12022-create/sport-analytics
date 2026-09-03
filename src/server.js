@@ -12,7 +12,7 @@ const galikaRouter = require('./routes/galika');
 const pool = require('./config/db');
 const cron = require('node-cron');
 const { buildDailyCombo } = require('./services/comboBuilder');
-const { autoSyncAllLeagues } = require('./services/leagueSync');
+const { autoSyncAllLeagues, updateFinishedResults } = require('./services/leagueSync');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -54,6 +54,15 @@ cron.schedule('0 8 * * *', async () => {
     console.log('Combine du jour genere automatiquement pour', today);
   } catch (err) {
     console.error('Generation automatique du combine impossible :', err.message);
+  }
+});
+
+cron.schedule('0 * * * *', async () => {
+  try {
+    const updated = await updateFinishedResults();
+    console.log('Mise a jour des resultats termines : ' + updated + ' match(s).');
+  } catch (err) {
+    console.error('Erreur mise a jour resultats :', err.message);
   }
 });
 

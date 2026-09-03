@@ -38,4 +38,39 @@ async function autoSyncAllLeagues() {
   return totalInserted;
 }
 
-module.exports = { syncLeague: syncLeague, autoSyncAllLeagues: autoSyncAllLeagues, getConfiguredLeagueIds: getConfiguredLeagueIds };
+async function updateFinishedResults() {
+  const pool = require('../config/db');
+  const { updateEloAfterMatch } = require('./eloRating');
+  const leagueIds = getConfiguredLeagueIds();
+  let updated = 0;
+
+  for (const leagueId of leagueIds) {
+    try {
+      const pastEvents = await sportsApi.getPastMatchesByLeague(leagueId);
+      for (const ev of pastEvents) {
+        if (ev.intHomeScore === null || ev.intAwayScore === null || ev.intHomeScore === undefined || ev.intAwayScore === undefined) continue;
+
+        const result = await pool.query(
+          `UPDATE matches SET status = 'finished', home_score = $1, away_score = $2
+           WHERE external_id = $3 AND (status IS DISTINCT FROM 'finished' OR elo_processed IS NOT TRUE)
+           RETURNING id, home_team_name, away_team_name, elo_processed`,
+          [Number(ev.intHomeScore), Number(ev.intAwayScore), ev.idEvent]
+        );
+
+        if (result.rows.length > 0) {
+          const match = result.rows[0];
+          updated += 1;
+          if (!match.elo_processed) {
+            await updateEloAfterMatch(match.home_team_name, match.away_team_name, Number(ev.intHomeScore), Number(ev.intAwayScore));
+            await pool.query('UPDATE matches SET elo_processed = TRUE WHERE id = $1', [match.id]);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Erreur mise a jour resultats ligue ' + leagueId + ' : ' + err.message);
+    }
+  }
+  return updated;
+}
+
+module.exports = { syncLeague: syncLeague, autoSyncAllLeagues: autoSyncAllLeagues, getConfiguredLeagueIds: getConfiguredLeagueIds, updateFinishedResults: updateFinishedResults };

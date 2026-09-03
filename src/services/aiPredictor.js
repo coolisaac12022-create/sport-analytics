@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const { getTeamElo, eloAdjustmentFactor } = require('./eloRating');
 
 function computeForm(results, teamName) {
   results = results || [];
@@ -36,7 +37,7 @@ function poissonProbability(lambda, k) { return (Math.pow(lambda, k) * Math.exp(
 function shrinkTowardsAverage(average, played, avgGoals) { return (average * played + avgGoals * SHRINKAGE_MATCHES) / (played + SHRINKAGE_MATCHES); }
 function round(n) { return Math.round(n * 1000) / 1000; }
 
-function statisticalPrediction(homeForm, awayForm, leagueName) {
+async function statisticalPrediction(homeForm, awayForm, leagueName, homeTeamName, awayTeamName) {
   const avgGoals = getLeagueAvgGoals(leagueName);
   const homeAttackAvg = shrinkTowardsAverage(homeForm.avgGoalsFor, homeForm.played, avgGoals);
   const homeDefenseAvg = shrinkTowardsAverage(homeForm.avgGoalsAgainst, homeForm.played, avgGoals);
@@ -48,8 +49,18 @@ function statisticalPrediction(homeForm, awayForm, leagueName) {
   const awayAttackStrength = awayAttackAvg / avgGoals;
   const awayDefenseWeakness = awayDefenseAvg / avgGoals;
 
-  const lambdaHome = avgGoals * homeAttackStrength * awayDefenseWeakness * HOME_ADVANTAGE;
-  const lambdaAway = avgGoals * awayAttackStrength * homeDefenseWeakness * AWAY_DISADVANTAGE;
+  let eloFactorHome = 1, eloFactorAway = 1;
+  if (homeTeamName && awayTeamName) {
+    try {
+      const homeElo = await getTeamElo(homeTeamName);
+      const awayElo = await getTeamElo(awayTeamName);
+      eloFactorHome = eloAdjustmentFactor(homeElo, awayElo);
+      eloFactorAway = eloAdjustmentFactor(awayElo, homeElo);
+    } catch (err) { console.error('Elo indisponible :', err.message); }
+  }
+
+  const lambdaHome = avgGoals * homeAttackStrength * awayDefenseWeakness * HOME_ADVANTAGE * eloFactorHome;
+  const lambdaAway = avgGoals * awayAttackStrength * homeDefenseWeakness * AWAY_DISADVANTAGE * eloFactorAway;
 
   let homeWinProb = 0, drawProb = 0, awayWinProb = 0, bttsYesProb = 0, over15Prob = 0, over25Prob = 0;
   let bestScore = { home: 0, away: 0 }, bestScoreProb = 0;
@@ -112,7 +123,7 @@ async function predictMatch(params) {
   const homeTeam = params.homeTeam, awayTeam = params.awayTeam, homeResults = params.homeResults, awayResults = params.awayResults, leagueName = params.leagueName;
   const homeForm = computeForm(homeResults, homeTeam);
   const awayForm = computeForm(awayResults, awayTeam);
-  const stats = statisticalPrediction(homeForm, awayForm, leagueName);
+  const stats = await statisticalPrediction(homeForm, awayForm, leagueName, homeTeam, awayTeam);
 
   let aiAnalysis = null, engine = 'statistical';
   try {
