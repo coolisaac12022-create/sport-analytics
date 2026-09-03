@@ -2082,3 +2082,27 @@ body {
   font-size: .88rem;
   font-style: italic;
 }
+
+/* ===== CORRECTION TAILLE DES BOUTONS (admin + onglets) ===== */
+button.small {
+  padding: 6px 12px !important;
+  font-size: 0.78rem !important;
+  box-shadow: none !important;
+  margin: 2px !important;
+  border-radius: 8px !important;
+}
+button.small:hover { transform: none !important; }
+
+.table-wrap { overflow-x: auto; }
+.table-wrap table { min-width: 700px; }
+.table-wrap td.actions { display: flex; flex-wrap: wrap; gap: 4px; white-space: normal; }
+
+.tab-btn {
+  padding: 7px 12px !important;
+  font-size: 0.78rem !important;
+}
+
+.market-row {
+  padding: 10px 4px !important;
+  gap: 8px;
+}
