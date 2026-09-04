@@ -118,3 +118,36 @@ ALTER TABLE teams ADD COLUMN IF NOT EXISTS elo_rating NUMERIC DEFAULT 1500;
 ALTER TABLE matches ADD COLUMN IF NOT EXISTS elo_processed BOOLEAN DEFAULT FALSE;
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS name VARCHAR(160);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_teams_name ON teams(name);
+
+-- Préférences personnalisées de l'utilisateur
+CREATE TABLE IF NOT EXISTS user_preferences (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+    country_code VARCHAR(10),
+    country_name VARCHAR(80),
+
+    favorite_team_id INTEGER REFERENCES teams(id) ON DELETE SET NULL,
+    favorite_team_name VARCHAR(120),
+
+    favorite_competitions JSONB NOT NULL DEFAULT '[]'::jsonb,
+    favorite_analysis_types JSONB NOT NULL DEFAULT '[]'::jsonb,
+
+    language VARCHAR(10) NOT NULL DEFAULT 'fr',
+    notifications_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    personalization_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+
+    privacy_analytics_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+
+    onboarding_completed BOOLEAN NOT NULL DEFAULT FALSE,
+
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_preferences_user_id
+ON user_preferences(user_id);
+
+ALTER TABLE daily_combos ADD COLUMN IF NOT EXISTS tier VARCHAR(20) DEFAULT 'safe';
+ALTER TABLE daily_combos DROP CONSTRAINT IF EXISTS daily_combos_combo_date_key;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_daily_combos_date_tier ON daily_combos(combo_date, tier);

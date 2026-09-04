@@ -2,9 +2,11 @@ const pool = require('../config/db');
 const sportsApi = require('./sportsApi');
 const { predictMatch, generateComboSummary } = require('./aiPredictor');
 
-const TARGET_COMBO_ODDS = 10;
-const MAX_COMBO_PICKS = 15;
-const MIN_PICK_PROB = 0.40;
+const TIER_CONFIG = {
+  ultra_safe: { minProb: 0.60, targetOdds: 3, maxPicks: 5 },
+  safe: { minProb: 0.45, targetOdds: 10, maxPicks: 12 },
+  fun: { minProb: 0.30, targetOdds: 25, maxPicks: 15 }
+};
 const EXACT_SCORE_MIN_CONF = 30;
 const EXACT_SCORE_MAX = 5;
 
@@ -41,7 +43,7 @@ async function ensurePrediction(match) {
   return inserted.rows[0];
 }
 
-async function buildDailyCombo(dateStr) {
+async function analyzeUpcomingMatches(dateStr) {
   const matchesRes = await pool.query("SELECT * FROM matches WHERE match_date >= NOW() AND match_date::date <= ($1::date + INTERVAL '4 days') ORDER BY match_date ASC LIMIT 80", [dateStr]);
   const matches = matchesRes.rows;
   if (matches.length === 0) throw new Error("Aucun match trouve pour cette date.");
@@ -51,30 +53,41 @@ async function buildDailyCombo(dateStr) {
     try {
       const prediction = await ensurePrediction(match);
       const bestOption = pickBestOption(match, prediction);
-      if (bestOption.prob >= MIN_PICK_PROB) analyzed.push({ match: match, prediction: prediction, bestOption: bestOption });
+      analyzed.push({ match: match, prediction: prediction, bestOption: bestOption });
     } catch (err) { console.error("Erreur match " + match.id + " : " + err.message); }
   }
+  return analyzed;
+}
+
+async function buildDailyCombo(dateStr, tier) {
+  tier = tier || 'safe';
+  const config = TIER_CONFIG[tier] || TIER_CONFIG.safe;
+  const analyzedAll = await analyzeUpcomingMatches(dateStr);
+  const analyzed = analyzedAll.filter(function(item) { return item.bestOption.prob >= config.minProb; });
   analyzed.sort(function(a, b) { return b.bestOption.prob - a.bestOption.prob; });
 
   const comboPicks = [];
   let runningOdds = 1;
   for (const item of analyzed) {
-    if (comboPicks.length >= MAX_COMBO_PICKS) break;
+    if (comboPicks.length >= config.maxPicks) break;
     const odds = 1 / item.bestOption.prob;
     comboPicks.push({ matchId: item.match.id, homeTeam: item.match.home_team_name, awayTeam: item.match.away_team_name, label: item.bestOption.label, resultKey: item.bestOption.key, type: "1x2", confidence: Math.round(item.bestOption.prob * 100), odds: Math.round(odds * 100) / 100 });
     runningOdds *= odds;
-    if (runningOdds >= TARGET_COMBO_ODDS) break;
+    if (runningOdds >= config.targetOdds) break;
   }
 
-  const exactScorePicks = analyzed.filter(function(i) { return Number(i.prediction.confidence) >= EXACT_SCORE_MIN_CONF; }).slice(0, EXACT_SCORE_MAX).map(function(i) {
+  const exactScorePicks = analyzedAll.filter(function(i) { return Number(i.prediction.confidence) >= EXACT_SCORE_MIN_CONF; }).slice(0, EXACT_SCORE_MAX).map(function(i) {
     return { matchId: i.match.id, homeTeam: i.match.home_team_name, awayTeam: i.match.away_team_name, label: "Score exact " + i.prediction.predicted_score_home + "-" + i.prediction.predicted_score_away, resultKey: "exact", type: "exact_score", confidence: Number(i.prediction.confidence), odds: i.prediction.confidence > 0 ? Math.round((100 / i.prediction.confidence) * 100) / 100 : null };
   });
 
-  const allPicks = comboPicks.concat(exactScorePicks);
+  const allPicks = comboPicks.concat(tier === 'safe' ? exactScorePicks : []);
   let aiSummary = null, engine = "statistical";
   try { aiSummary = await generateComboSummary(comboPicks); if (aiSummary) engine = "ai"; } catch (err) { console.error(err.message); }
 
-  const comboRes = await pool.query("INSERT INTO daily_combos (combo_date, ai_summary, engine) VALUES ($1,$2,$3) ON CONFLICT (combo_date) DO UPDATE SET ai_summary = EXCLUDED.ai_summary, engine = EXCLUDED.engine RETURNING *", [dateStr, aiSummary, engine]);
+  const comboRes = await pool.query(
+    "INSERT INTO daily_combos (combo_date, tier, ai_summary, engine) VALUES ($1,$2,$3,$4) ON CONFLICT (combo_date, tier) DO UPDATE SET ai_summary = EXCLUDED.ai_summary, engine = EXCLUDED.engine RETURNING *",
+    [dateStr, tier, aiSummary, engine]
+  );
   const combo = comboRes.rows[0];
   await pool.query("DELETE FROM combo_selections WHERE combo_id = $1", [combo.id]);
   for (const pick of allPicks) {
@@ -99,14 +112,14 @@ function evaluatePick(pick) {
   return 'pending';
 }
 
-async function getCombo(dateStr) {
-  const comboRes = await pool.query("SELECT * FROM daily_combos WHERE combo_date = $1", [dateStr]);
+async function getCombo(dateStr, tier) {
+  tier = tier || 'safe';
+  const comboRes = await pool.query("SELECT * FROM daily_combos WHERE combo_date = $1 AND tier = $2", [dateStr, tier]);
   if (comboRes.rows.length === 0) return null;
   const combo = comboRes.rows[0];
   const selectionsRes = await pool.query(
     "SELECT cs.*, m.home_team_name, m.away_team_name, m.match_date, m.status, m.home_score, m.away_score, p.btts_yes_prob, p.over_1_5_prob, p.over_2_5_prob " +
-    "FROM combo_selections cs " +
-    "JOIN matches m ON m.id = cs.match_id " +
+    "FROM combo_selections cs JOIN matches m ON m.id = cs.match_id " +
     "LEFT JOIN LATERAL (SELECT btts_yes_prob, over_1_5_prob, over_2_5_prob FROM predictions WHERE match_id = cs.match_id ORDER BY created_at DESC LIMIT 1) p ON true " +
     "WHERE cs.combo_id = $1 ORDER BY cs.pick_type ASC, cs.confidence DESC",
     [combo.id]
@@ -115,4 +128,13 @@ async function getCombo(dateStr) {
   return { combo: combo, picks: picks };
 }
 
-module.exports = { buildDailyCombo: buildDailyCombo, getCombo: getCombo };
+async function buildAllTiers(dateStr) {
+  const results = {};
+  for (const tier of Object.keys(TIER_CONFIG)) {
+    try { results[tier] = await buildDailyCombo(dateStr, tier); }
+    catch (err) { console.error('Erreur combine tier ' + tier + ' : ' + err.message); }
+  }
+  return results;
+}
+
+module.exports = { buildDailyCombo: buildDailyCombo, getCombo: getCombo, buildAllTiers: buildAllTiers };

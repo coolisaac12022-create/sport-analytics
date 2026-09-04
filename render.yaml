@@ -10,6 +10,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install
+    preDeployCommand: npm run db:init
     startCommand: npm start
     envVars:
       - key: DATABASE_URL

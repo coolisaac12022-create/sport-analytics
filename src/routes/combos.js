@@ -8,9 +8,7 @@ router.use(requireAuth, async (req, res, next) => {
   try {
     const result = await pool.query('SELECT email_verified, phone_verified FROM users WHERE id = $1', [req.user.id]);
     const user = result.rows[0];
-    if (false) {
-      return res.status(403).json({ error: 'Verifie ton email et ton telephone pour acceder aux combines.' });
-    }
+    if (!user) return res.status(403).json({ error: 'Compte introuvable.' });
     next();
   } catch (err) {
     console.error(err);
@@ -18,17 +16,14 @@ router.use(requireAuth, async (req, res, next) => {
   }
 });
 
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
-}
+function todayStr() { return new Date().toISOString().slice(0, 10); }
 
 router.get('/today', async (req, res) => {
   try {
+    const tier = req.query.tier || 'safe';
     const date = todayStr();
-    let result = await getCombo(date);
-    if (!result) {
-      result = await buildDailyCombo(date);
-    }
+    let result = await getCombo(date, tier);
+    if (!result) result = await buildDailyCombo(date, tier);
     res.json(result);
   } catch (err) {
     console.error(err);
@@ -38,7 +33,8 @@ router.get('/today', async (req, res) => {
 
 router.get('/:date', async (req, res) => {
   try {
-    const result = await getCombo(req.params.date);
+    const tier = req.query.tier || 'safe';
+    const result = await getCombo(req.params.date, tier);
     if (!result) return res.status(404).json({ error: 'Aucun combine pour cette date.' });
     res.json(result);
   } catch (err) {

@@ -2,15 +2,15 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
-const { buildDailyCombo } = require('../services/comboBuilder');
+const { buildDailyCombo, buildAllTiers } = require('../services/comboBuilder');
 
 router.use(requireAuth, requireAdmin);
 
 router.post('/combos/generate', async (req, res) => {
   try {
     const date = (req.body && req.body.date) || new Date().toISOString().slice(0, 10);
-    const result = await buildDailyCombo(date);
-    res.json(result);
+    const results = await buildAllTiers(date);
+    res.json({ message: 'Combines regeneres pour les 3 niveaux.', results: results });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message || 'Erreur lors de la generation du combine.' });
