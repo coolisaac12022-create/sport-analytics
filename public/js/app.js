@@ -250,6 +250,17 @@ loadMatches();
 
 loadCombo();
 
+document.querySelectorAll('.combo-tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.combo-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentTier = btn.dataset.tier;
+    loadCombo();
+  });
+});
+
+let currentTier = 'ultra_safe';
+
 async function loadCombo() {
   const el = document.getElementById('comboContent');
   if (!el) return;
@@ -259,7 +270,7 @@ async function loadCombo() {
   }
   el.innerHTML = '<p class="hint">Chargement du combine du jour...</p>';
   try {
-    const res = await fetch(`${API}/combos/today`, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(`${API}/combos/today?tier=${currentTier}`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Impossible de charger le combine.');
     renderCombo(data);

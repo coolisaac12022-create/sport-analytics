@@ -374,3 +374,7 @@ th { color: var(--text-muted); font-weight: 600; }
 .combo-extra-markets strong {
   color: var(--text);
 }
+
+.combo-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.combo-tab-btn { padding: 8px 16px; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid var(--border, rgba(255,255,255,.09)); color: var(--text-muted, #9aa0b4); font-size: .82rem; font-weight: 700; cursor: pointer; }
+.combo-tab-btn.active { color: #fff; background: linear-gradient(135deg, #22c55e, #16a34a); border-color: transparent; }
