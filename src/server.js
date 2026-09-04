@@ -53,8 +53,8 @@ app.listen(PORT, () => {
 cron.schedule('0 8 * * *', async () => {
   try {
     const today = new Date().toISOString().slice(0, 10);
-    await buildDailyCombo(today);
-    console.log('Combine du jour genere automatiquement pour', today);
+    await buildAllTiers(today);
+    console.log('Combines des 3 niveaux generes automatiquement pour', today);
   } catch (err) {
     console.error('Generation automatique du combine impossible :', err.message);
   }
