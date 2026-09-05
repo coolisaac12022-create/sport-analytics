@@ -27,10 +27,23 @@ if (registerForm) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'inscription.');
 
-      setMsg(registerMessage, data.message, 'success');
+      setMsg(registerMessage, 'Compte cree ! Connexion automatique...', 'success');
       registeredEmail = email;
-      otpSection.classList.remove('hidden');
-      otpSection.scrollIntoView({ behavior: 'smooth' });
+
+      const loginRes = await fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: email, password })
+      });
+      const loginData = await loginRes.json();
+      if (loginRes.ok) {
+        localStorage.setItem('token', loginData.token);
+        localStorage.setItem('user', JSON.stringify(loginData.user));
+        setTimeout(function() { window.location.href = '/'; }, 800);
+      } else {
+        otpSection.classList.remove('hidden');
+        otpSection.scrollIntoView({ behavior: 'smooth' });
+      }
     } catch (err) {
       setMsg(registerMessage, err.message, 'error');
     }
