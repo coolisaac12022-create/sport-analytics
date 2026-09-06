@@ -151,3 +151,4 @@ ON user_preferences(user_id);
 ALTER TABLE daily_combos ADD COLUMN IF NOT EXISTS tier VARCHAR(20) DEFAULT 'safe';
 ALTER TABLE daily_combos DROP CONSTRAINT IF EXISTS daily_combos_combo_date_key;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_daily_combos_date_tier ON daily_combos(combo_date, tier);
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS badge_url TEXT;

@@ -11,6 +11,8 @@ async function syncLeague(leagueId) {
       [ev.idEvent, ev.strLeague, ev.strSeason, ev.strHomeTeam, ev.strAwayTeam, ev.strTimestamp || ev.dateEvent]
     );
     inserted += 1;
+    cacheTeamBadge(ev.strHomeTeam).catch(function() {});
+    cacheTeamBadge(ev.strAwayTeam).catch(function() {});
   }
   return inserted;
 }
@@ -73,4 +75,22 @@ async function updateFinishedResults() {
   return updated;
 }
 
-module.exports = { syncLeague: syncLeague, autoSyncAllLeagues: autoSyncAllLeagues, getConfiguredLeagueIds: getConfiguredLeagueIds, updateFinishedResults: updateFinishedResults };
+async function cacheTeamBadge(teamName) {
+  const pool = require('../config/db');
+  const existing = await pool.query('SELECT badge_url FROM teams WHERE name = $1', [teamName]);
+  if (existing.rows.length > 0 && existing.rows[0].badge_url) return;
+
+  try {
+    const team = await sportsApi.getTeamByName(teamName);
+    if (team && team.strTeamBadge) {
+      await pool.query(
+        'INSERT INTO teams (name, badge_url) VALUES ($1, $2) ON CONFLICT (name) DO UPDATE SET badge_url = $2',
+        [teamName, team.strTeamBadge]
+      );
+    }
+  } catch (err) {
+    console.error('Logo indisponible pour ' + teamName + ' : ' + err.message);
+  }
+}
+
+module.exports = { syncLeague: syncLeague, autoSyncAllLeagues: autoSyncAllLeagues, getConfiguredLeagueIds: getConfiguredLeagueIds, updateFinishedResults: updateFinishedResults, cacheTeamBadge: cacheTeamBadge };

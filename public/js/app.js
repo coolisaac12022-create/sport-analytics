@@ -117,8 +117,10 @@ function renderMatchCard(match) {
   const div = document.createElement('div');
   div.className = 'match-item';
   const date = match.match_date ? new Date(match.match_date).toLocaleString('fr-FR') : 'Date inconnue';
+  const homeLogo = match.home_team_badge ? `<img src="${match.home_team_badge}" class="team-logo-img" alt="" />` : '';
+  const awayLogo = match.away_team_badge ? `<img src="${match.away_team_badge}" class="team-logo-img" alt="" />` : '';
   div.innerHTML = `
-    <div class="teams">${match.home_team_name} vs ${match.away_team_name}</div>
+    <div class="teams">${homeLogo}${match.home_team_name} vs ${match.away_team_name}${awayLogo}</div>
     <div class="date">${date} — ${match.league || ''}</div>
     <button data-id="${match.id}">Voir l'analyse</button>
   `;
