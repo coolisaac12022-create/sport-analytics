@@ -3,9 +3,11 @@ const sportsApi = require('./sportsApi');
 const { predictMatch, generateComboSummary } = require('./aiPredictor');
 
 const TIER_CONFIG = {
-  ultra_safe: { minProb: 0.60, targetOdds: 3, maxPicks: 5 },
-  safe: { minProb: 0.45, targetOdds: 10, maxPicks: 12 },
-  fun: { minProb: 0.30, targetOdds: 25, maxPicks: 15 }
+  ultra_safe: { minProb: 0.65, targetOdds: 2, maxPicks: 1 },
+  safe: { minProb: 0.55, targetOdds: 4, maxPicks: 3 },
+  equilibre: { minProb: 0.45, targetOdds: 8, maxPicks: 8 },
+  agressif: { minProb: 0.35, targetOdds: 15, maxPicks: 12 },
+  daily_combo: { minProb: 0.28, targetOdds: 30, maxPicks: 18 }
 };
 const EXACT_SCORE_MIN_CONF = 30;
 const EXACT_SCORE_MAX = 5;
