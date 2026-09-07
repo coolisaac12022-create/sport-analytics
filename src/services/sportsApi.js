@@ -1,53 +1,88 @@
-// Service d'intégration avec une API sportive externe.
-// Par défaut : TheSportsDB (gratuite). Pour changer de fournisseur (API-Football, SportRadar, etc.),
-// il suffit de modifier ce fichier — le reste de l'app n'a pas besoin de changer.
-
 const fetch = require('node-fetch');
 
-const BASE_URL = process.env.SPORTS_API_BASE_URL || 'https://www.thesportsdb.com/api/v1/json';
-const API_KEY = process.env.SPORTS_API_KEY || '3'; // "3" = clé de test publique TheSportsDB
+const BASE_URL = (
+  process.env.SPORTS_API_BASE_URL ||
+  'https://v3.football.api-sports.io'
+).replace(/\/+$/, '');
 
-async function request(pathname) {
-  const url = `${BASE_URL}/${API_KEY}/${pathname}`;
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`Erreur API sportive (${res.status}) : ${url}`);
+const API_KEY = process.env.SPORTS_API_KEY;
+
+async function request(path, params = {}) {
+  if (!API_KEY) {
+    throw new Error('SPORTS_API_KEY manquante.');
   }
-  return res.json();
+
+  const url = new URL(`${BASE_URL}/${path}`);
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      url.searchParams.set(key, value);
+    }
+  });
+
+  const res = await fetch(url.toString(), {
+    headers: {
+      'x-apisports-key': API_KEY,
+      accept: 'application/json'
+    }
+  });
+
+  if (!res.ok) {
+    throw new Error(`Erreur API Football (${res.status}).`);
+  }
+
+  const data = await res.json();
+
+  if (data.errors && Object.keys(data.errors).length > 0) {
+    throw new Error(JSON.stringify(data.errors));
+  }
+
+  return data.response || [];
 }
 
-// Recherche une ligue par nom (ex : "English Premier League")
-async function searchLeague(name) {
-  const data = await request(`search_all_leagues.php?s=${encodeURIComponent(name)}`);
-  return data.countrys || data.leagues || [];
+// Tous les matchs d'une date.
+// Cette fonction permettra d'économiser les requêtes du forfait gratuit.
+async function getFixturesByDate(date) {
+  return request('fixtures', {
+    date
+  });
 }
 
-// Récupère les prochains matchs d'une ligue (par id de ligue TheSportsDB)
+// Prochains matchs d'une compétition.
 async function getUpcomingMatchesByLeague(leagueId) {
-  const data = await request(`eventsnextleague.php?id=${leagueId}`);
-  return data.events || [];
+  return request('fixtures', {
+    league: leagueId,
+    next: 20
+  });
 }
 
-// Récupère les derniers matchs terminés d'une ligue
+// Derniers matchs d'une compétition.
 async function getPastMatchesByLeague(leagueId) {
-  const data = await request(`eventspastleague.php?id=${leagueId}`);
-  return data.events || [];
+  return request('fixtures', {
+    league: leagueId,
+    last: 20
+  });
 }
 
-// Récupère les détails d'une équipe par nom
+// Recherche d'une équipe par nom.
 async function getTeamByName(name) {
-  const data = await request(`searchteams.php?t=${encodeURIComponent(name)}`);
-  return (data.teams && data.teams[0]) || null;
+  const teams = await request('teams', {
+    search: name
+  });
+
+  return teams[0]?.team || null;
 }
 
-// Récupère les 5 derniers résultats d'une équipe (pour calculer sa forme)
+// Derniers matchs d'une équipe.
 async function getLastResultsByTeam(teamId) {
-  const data = await request(`eventslast.php?id=${teamId}`);
-  return data.results || [];
+  return request('fixtures', {
+    team: teamId,
+    last: 5
+  });
 }
 
 module.exports = {
-  searchLeague,
+  getFixturesByDate,
   getUpcomingMatchesByLeague,
   getPastMatchesByLeague,
   getTeamByName,

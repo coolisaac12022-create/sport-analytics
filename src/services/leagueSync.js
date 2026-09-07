@@ -1,96 +1,100 @@
-const pool = require('../config/db');
-const sportsApi = require('./sportsApi');
+const pool=require('../config/db');
+const api=require('./sportsApi');
 
-async function syncLeague(leagueId) {
-  const events = await sportsApi.getUpcomingMatchesByLeague(leagueId);
+function status(s){
+  const c=s?.short||s;
+  if(['FT','AET','PEN'].includes(c)) return 'finished';
+  if(['1H','HT','2H','ET','P','LIVE','BT'].includes(c)) return 'live';
+  return 'scheduled';
+}
 
-  let inserted = 0;
-  for (const ev of events) {
+async function save(ev){
+  const f=ev.fixture||{},l=ev.league||{},h=ev.teams?.home||{},a=ev.teams?.away||{},g=ev.goals||{};
+  if(!f.id||!h.name||!a.name||!f.date)return false;
+  const st=status(f.status),hs=g.home!=null?Number(g.home):null,as=g.away!=null?Number(g.away):null;
+
+  const r=await pool.query(
+    `INSERT INTO matches(external_id,league,season,home_team_name,away_team_name,match_date,status,home_score,away_score)
+     VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
+     ON CONFLICT(external_id) DO UPDATE SET league=EXCLUDED.league,season=EXCLUDED.season,home_team_name=EXCLUDED.home_team_name,away_team_name=EXCLUDED.away_team_name,match_date=EXCLUDED.match_date,status=EXCLUDED.status,home_score=EXCLUDED.home_score,away_score=EXCLUDED.away_score
+     RETURNING id,home_team_name,away_team_name,elo_processed`,
+    [String(f.id),l.name||'Unknown',l.season||null,h.name,a.name,f.date,st,hs,as]);
+
+  if(h.logo)await badge(h.name,h.logo);
+  if(a.logo)await badge(a.name,a.logo);
+
+  const m=r.rows[0];
+  if(st==='finished'&&hs!==null&&as!==null&&!m.elo_processed){
+    try{
+      const {updateEloAfterMatch}=require('./eloRating');
+      await updateEloAfterMatch(m.home_team_name,m.away_team_name,hs,as);
+      await pool.query('UPDATE matches SET elo_processed=TRUE WHERE id=$1',[m.id]);
+    }catch(e){console.error('Erreur ELO : '+e.message);}
+  }
+  return true;
+}
+
+async function syncLeague(id){
+  const events=await api.getUpcomingMatchesByLeague(id);
+  let n=0;
+  for(const e of events)try{if(await save(e))n++;}catch(x){console.error('Erreur match : '+x.message);}
+  return n;
+}
+
+function dates(d){
+  return d.toISOString().slice(0,10);
+}
+
+async function syncDate(date){
+  const events=await api.getFixturesByDate(date);
+  let n=0;
+  for(const e of events)try{if(await save(e))n++;}catch(x){console.error('Erreur match : '+x.message);}
+  return n;
+}
+
+async function autoSyncAllLeagues(){
+  let n=0;
+  for(let i=0;i<=7;i++){
+    const d=new Date();
+    d.setUTCDate(d.getUTCDate()+i);
+    try{
+      const x=await syncDate(dates(d));
+      n+=x;
+      console.log('Synchronisation '+dates(d)+' : '+x+' match(s).');
+    }catch(e){console.error('Erreur sync '+dates(d)+' : '+e.message);}
+  }
+  return n;
+}
+
+async function updateFinishedResults(){
+  let n=0;
+  for(let i=1;i>=0;i--){
+    const d=new Date();
+    d.setUTCDate(d.getUTCDate()-i);
+    try{
+      const events=await api.getFixturesByDate(dates(d));
+      for(const e of events)
+        if(status(e.fixture?.status)==='finished'&&e.goals?.home!=null&&e.goals?.away!=null)
+          if(await save(e))n++;
+    }catch(e){console.error('Erreur résultats : '+e.message);}
+  }
+  return n;
+}
+
+async function badge(name,url){
+  if(!name||!url)return;
+  try{
     await pool.query(
-      "INSERT INTO matches (external_id, league, season, home_team_name, away_team_name, match_date, status) VALUES ($1, $2, $3, $4, $5, $6, 'scheduled') ON CONFLICT (external_id) DO NOTHING",
-      [ev.idEvent, ev.strLeague, ev.strSeason, ev.strHomeTeam, ev.strAwayTeam, ev.strTimestamp || ev.dateEvent]
+      `INSERT INTO teams(name,badge_url) VALUES($1,$2)
+       ON CONFLICT(name) DO UPDATE SET badge_url=EXCLUDED.badge_url`,
+      [name,url]
     );
-    inserted += 1;
-    cacheTeamBadge(ev.strHomeTeam).catch(function() {});
-    cacheTeamBadge(ev.strAwayTeam).catch(function() {});
-  }
-  return inserted;
+  }catch(e){console.error('Erreur logo : '+e.message);}
 }
 
-function getConfiguredLeagueIds() {
-  const fromEnv = process.env.AUTO_SYNC_LEAGUE_IDS;
-  if (fromEnv) {
-    return fromEnv.split(',').map(function(id) { return id.trim(); }).filter(Boolean);
-  }
-  return ['4328', '4335', '4332', '4331', '4334', '4346', '4351', '4339', '4340', '4344', '4347', '4350', '4354'];
+function getConfiguredLeagueIds(){
+  return (process.env.AUTO_SYNC_LEAGUE_IDS||'39,140,135,78,61,2,3,94,88,203,207,179,128')
+    .split(',').map(x=>x.trim()).filter(Boolean);
 }
 
-async function autoSyncAllLeagues() {
-  const leagueIds = getConfiguredLeagueIds();
-  let totalInserted = 0;
-  for (const leagueId of leagueIds) {
-    try {
-      const count = await syncLeague(leagueId);
-      totalInserted += count;
-      console.log("Synchronisation automatique - ligue " + leagueId + " : " + count + " match(s).");
-    } catch (err) {
-      console.error("Erreur de synchronisation automatique pour la ligue " + leagueId + " : " + err.message);
-    }
-  }
-  return totalInserted;
-}
-
-async function updateFinishedResults() {
-  const pool = require('../config/db');
-  const { updateEloAfterMatch } = require('./eloRating');
-  const leagueIds = getConfiguredLeagueIds();
-  let updated = 0;
-
-  for (const leagueId of leagueIds) {
-    try {
-      const pastEvents = await sportsApi.getPastMatchesByLeague(leagueId);
-      for (const ev of pastEvents) {
-        if (ev.intHomeScore === null || ev.intAwayScore === null || ev.intHomeScore === undefined || ev.intAwayScore === undefined) continue;
-
-        const result = await pool.query(
-          `UPDATE matches SET status = 'finished', home_score = $1, away_score = $2
-           WHERE external_id = $3 AND (status IS DISTINCT FROM 'finished' OR elo_processed IS NOT TRUE)
-           RETURNING id, home_team_name, away_team_name, elo_processed`,
-          [Number(ev.intHomeScore), Number(ev.intAwayScore), ev.idEvent]
-        );
-
-        if (result.rows.length > 0) {
-          const match = result.rows[0];
-          updated += 1;
-          if (!match.elo_processed) {
-            await updateEloAfterMatch(match.home_team_name, match.away_team_name, Number(ev.intHomeScore), Number(ev.intAwayScore));
-            await pool.query('UPDATE matches SET elo_processed = TRUE WHERE id = $1', [match.id]);
-          }
-        }
-      }
-    } catch (err) {
-      console.error('Erreur mise a jour resultats ligue ' + leagueId + ' : ' + err.message);
-    }
-  }
-  return updated;
-}
-
-async function cacheTeamBadge(teamName) {
-  const pool = require('../config/db');
-  const existing = await pool.query('SELECT badge_url FROM teams WHERE name = $1', [teamName]);
-  if (existing.rows.length > 0 && existing.rows[0].badge_url) return;
-
-  try {
-    const team = await sportsApi.getTeamByName(teamName);
-    if (team && team.strTeamBadge) {
-      await pool.query(
-        'INSERT INTO teams (name, badge_url) VALUES ($1, $2) ON CONFLICT (name) DO UPDATE SET badge_url = $2',
-        [teamName, team.strTeamBadge]
-      );
-    }
-  } catch (err) {
-    console.error('Logo indisponible pour ' + teamName + ' : ' + err.message);
-  }
-}
-
-module.exports = { syncLeague: syncLeague, autoSyncAllLeagues: autoSyncAllLeagues, getConfiguredLeagueIds: getConfiguredLeagueIds, updateFinishedResults: updateFinishedResults, cacheTeamBadge: cacheTeamBadge };
+module.exports={syncLeague,autoSyncAllLeagues,getConfiguredLeagueIds,updateFinishedResults,cacheTeamBadge:badge};
