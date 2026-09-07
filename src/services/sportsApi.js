@@ -1,9 +1,7 @@
 const fetch = require('node-fetch');
 
-const BASE_URL = (
-  process.env.SPORTS_API_BASE_URL ||
-  'https://v3.football.api-sports.io'
-).replace(/\/+$/, '');
+const configuredBase = (process.env.SPORTS_API_BASE_URL || '').replace(/\/+$/, '');
+const BASE_URL = configuredBase.includes('api-sports.io') ? configuredBase : 'https://v3.football.api-sports.io';
 
 const API_KEY = process.env.SPORTS_API_KEY;
 
