@@ -6,6 +6,8 @@ const BASE_URL = configuredBase.includes('api-sports.io') ? configuredBase : 'ht
 const API_KEY = process.env.SPORTS_API_KEY;
 
 async function request(path, params = {}) {
+  console.log("API CONFIG:", {keyPresent: Boolean(API_KEY), baseUrl: BASE_URL});
+
   if (!API_KEY) {
     throw new Error('SPORTS_API_KEY manquante.');
   }
