@@ -15,6 +15,7 @@ if (registerForm) {
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
     const phone = document.getElementById('phone').value.trim();
+    const birthYear = document.getElementById('birthYear').value;
     const password = document.getElementById('password').value;
 
     setMsg(registerMessage, 'Création du compte...', '');
@@ -22,7 +23,7 @@ if (registerForm) {
       const res = await fetch(`${API}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, password })
+        body: JSON.stringify({ name, email, phone, password, birthYear })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'inscription.');

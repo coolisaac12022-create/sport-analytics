@@ -43,10 +43,19 @@ function publicUser(u) {
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, birthYear } = req.body;
 
-    if (!name || !email || !phone || !password) {
+    if (!name || !email || !phone || !password || !birthYear) {
       return res.status(400).json({ error: 'Tous les champs sont obligatoires.' });
+    }
+
+    const year = Number(birthYear);
+    const maxYear = new Date().getFullYear() - 19;
+
+    if (!Number.isInteger(year) || year < 1900 || year > maxYear) {
+      return res.status(400).json({
+        error: 'Inscription réservée aux personnes âgées de 18 ans ou plus.'
+      });
     }
     if (!EMAIL_REGEX.test(email)) {
       return res.status(400).json({ error: 'Adresse email invalide.' });
@@ -75,10 +84,10 @@ router.post('/register', async (req, res) => {
 
     const { rows } = await pool.query(
       `INSERT INTO users
-         (name, email, phone, password_hash, role, email_verification_token, phone_otp_code, phone_otp_expires)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+         (name, email, phone, birth_year, password_hash, role, email_verification_token, phone_otp_code, phone_otp_expires)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
        RETURNING *`,
-      [name, email, phone, passwordHash, role, emailToken, otpCode, otpExpires]
+      [name, email, phone, year, passwordHash, role, emailToken, otpCode, otpExpires]
     );
     const user = rows[0];
 
