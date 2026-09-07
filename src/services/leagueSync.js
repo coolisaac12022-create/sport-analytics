@@ -85,8 +85,8 @@ async function badge(name,url){
   if(!name||!url)return;
   try{
     await pool.query(
-      `INSERT INTO teams(name,badge_url) VALUES($1,$2)
-       ON CONFLICT(name) DO UPDATE SET badge_url=EXCLUDED.badge_url`,
+      `INSERT INTO teams(name,logo_url) VALUES($1,$2)
+       ON CONFLICT(name) DO UPDATE SET logo_url=EXCLUDED.logo_url`,
       [name,url]
     );
   }catch(e){console.error('Erreur logo : '+e.message);}
