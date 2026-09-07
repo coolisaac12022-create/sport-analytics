@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inscription — Predize Foot Isaac</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+
+<header class="topbar">
+  <h1>⚽ Predize Foot Isaac</h1>
+  <p>Crée ton compte</p>
+</header>
+
+<main class="container narrow">
+  <section class="card">
+
+    <h2>Inscription</h2>
+
+    <form id="registerForm" class="auth-form">
+
+      <label>Nom
+        <input
+          type="text"
+          id="name"
+          maxlength="120"
+          required
+        />
+      </label>
+
+      <label>Email
+        <input
+          type="email"
+          id="email"
+          required
+        />
+      </label>
+
+      <label>Téléphone
+        <input
+          type="tel"
+          id="phone"
+          placeholder="+2250700000000"
+          required
+        />
+      </label>
+
+      <label>Mot de passe
+        <input
+          type="password"
+          id="password"
+          minlength="8"
+          required
+        />
+      </label>
+
+      <button type="submit">
+        Créer mon compte
+      </button>
+
+    </form>
+
+    <p id="registerMessage" class="message"></p>
+
+    <section id="otpSection" class="hidden">
+
+      <h3>Vérification SMS</h3>
+
+      <form id="otpForm" class="auth-form">
+
+        <label>Code reçu par SMS
+          <input
+            type="text"
+            id="otpCode"
+            maxlength="10"
+            required
+          />
+        </label>
+
+        <button type="submit">
+          Vérifier
+        </button>
+
+      </form>
+
+      <button id="resendOtp">
+        Renvoyer le code
+      </button>
+
+      <p id="otpMessage" class="message"></p>
+
+    </section>
+
+    <p class="hint">
+      Déjà un compte ?
+      <a href="/login.html">Se connecter</a>
+    </p>
+
+  </section>
+</main>
+
+<footer class="footer">
+  <p>
+    <a href="/">← Retour à l'accueil</a>
+  </p>
+</footer>
+
+<script src="/js/auth.js"></script>
+
+</body>
+</html>
