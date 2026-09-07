@@ -18,9 +18,9 @@ services:
           name: sport-analytics-db
           property: connectionString
       - key: SPORTS_API_KEY
-        value: 3
+        sync: false
       - key: SPORTS_API_BASE_URL
-        value: https://www.thesportsdb.com/api/v1/json
+        value: https://v3.football.api-sports.io
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: NODE_ENV
