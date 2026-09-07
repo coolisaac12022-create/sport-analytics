@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
     const { rows } = await pool.query(
-      `SELECT m.*, th.badge_url AS home_team_badge, ta.badge_url AS away_team_badge
+      `SELECT m.*, th.logo_url AS home_team_badge, ta.logo_url AS away_team_badge
        FROM matches m
        LEFT JOIN teams th ON th.name = m.home_team_name
        LEFT JOIN teams ta ON ta.name = m.away_team_name
