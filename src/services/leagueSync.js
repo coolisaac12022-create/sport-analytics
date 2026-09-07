@@ -54,7 +54,7 @@ async function syncDate(date){
 
 async function autoSyncAllLeagues(){
   let n=0;
-  for(let i=0;i<=7;i++){
+  for(let i=0;i<=1;i++){
     const d=new Date();
     d.setUTCDate(d.getUTCDate()+i);
     try{
