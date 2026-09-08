@@ -4,14 +4,35 @@ const { getTeamElo, eloAdjustmentFactor } = require('./eloRating');
 function computeForm(results, teamName) {
   results = results || [];
   let points = 0, goalsFor = 0, goalsAgainst = 0, played = 0;
+
   results.slice(0, 5).forEach(function(r) {
-    const isHome = r.strHomeTeam === teamName;
-    const gf = Number(isHome ? r.intHomeScore : r.intAwayScore) || 0;
-    const ga = Number(isHome ? r.intAwayScore : r.intHomeScore) || 0;
-    goalsFor += gf; goalsAgainst += ga; played += 1;
-    if (gf > ga) points += 3; else if (gf === ga) points += 1;
+    const home = r.teams?.home?.name || '';
+    const away = r.teams?.away?.name || '';
+    const homeGoals = r.goals?.home;
+    const awayGoals = r.goals?.away;
+
+    if (homeGoals == null || awayGoals == null) return;
+
+    const isHome = home === teamName;
+    const isAway = away === teamName;
+
+    const gf = Number(isHome ? homeGoals : awayGoals);
+    const ga = Number(isHome ? awayGoals : homeGoals);
+
+    goalsFor += gf;
+    goalsAgainst += ga;
+    played += 1;
+
+    if (gf > ga) points += 3;
+    else if (gf === ga) points += 1;
   });
-  return { played: played, points: points, avgGoalsFor: played ? goalsFor / played : 0, avgGoalsAgainst: played ? goalsAgainst / played : 0 };
+
+  return {
+    played: played,
+    points: points,
+    avgGoalsFor: played ? goalsFor / played : 0,
+    avgGoalsAgainst: played ? goalsAgainst / played : 0
+  };
 }
 
 const LEAGUE_AVG_GOALS = 1.35;

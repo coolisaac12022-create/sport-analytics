@@ -50,8 +50,8 @@ router.post('/:matchId', async (req, res) => {
     ]);
 
     const [homeResults, awayResults] = await Promise.all([
-      homeTeam ? sportsApi.getLastResultsByTeam(homeTeam.idTeam) : [],
-      awayTeam ? sportsApi.getLastResultsByTeam(awayTeam.idTeam) : []
+      homeTeam ? sportsApi.getLastResultsByTeam(homeTeam.id) : [],
+      awayTeam ? sportsApi.getLastResultsByTeam(awayTeam.id) : []
     ]);
 
     const prediction = await predictMatch({

@@ -73,6 +73,11 @@ CREATE TABLE IF NOT EXISTS predictions (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+ALTER TABLE predictions ADD COLUMN IF NOT EXISTS home_win_or_draw_prob NUMERIC;
+ALTER TABLE predictions ADD COLUMN IF NOT EXISTS btts_yes_prob NUMERIC;
+ALTER TABLE predictions ADD COLUMN IF NOT EXISTS over_1_5_prob NUMERIC;
+ALTER TABLE predictions ADD COLUMN IF NOT EXISTS over_2_5_prob NUMERIC;
+
 CREATE INDEX IF NOT EXISTS idx_matches_date ON matches(match_date);
 CREATE INDEX IF NOT EXISTS idx_predictions_match ON predictions(match_id);
 
