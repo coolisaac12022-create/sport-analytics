@@ -8,9 +8,12 @@ const pool = require('../config/db');
 async function init() {
   const schemaPath = path.join(__dirname, 'schema.sql');
   const schema = fs.readFileSync(schemaPath, 'utf8');
+  const migrationPath = path.join(__dirname, '../../migration_v2.sql');
+  const migration = fs.readFileSync(migrationPath, 'utf8');
   try {
     console.log('⏳ Initialisation de la base de données...');
     await pool.query(schema);
+    await pool.query(migration);
     console.log('✅ Base de données initialisée avec succès.');
   } catch (err) {
     console.error('❌ Erreur lors de l\'initialisation :', err.message);

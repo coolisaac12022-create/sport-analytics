@@ -10,6 +10,7 @@ const authRouter = require('./routes/auth');
 const adminRouter = require('./routes/admin');
 const galikaRouter = require('./routes/galika');
 const preferencesRouter = require('./routes/preferences');
+const paymentsRouter = require('./routes/payments');
 const pool = require('./config/db');
 const cron = require('node-cron');
 const { buildDailyCombo, buildAllTiers } = require('./services/comboBuilder');
@@ -39,6 +40,7 @@ app.use('/api/predictions', predictionsRouter);
 app.use('/api/combos', combosRouter);
 app.use('/api/galika', galikaRouter);
 app.use('/api/preferences', preferencesRouter);
+app.use('/api/payments', paymentsRouter);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));

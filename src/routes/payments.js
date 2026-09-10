@@ -7,13 +7,13 @@
 // A ADAPTER avant utilisation (2 lignes ci-dessous, verifie tes fichiers) :
 //   1) le chemin/nom de ton pool PostgreSQL (regarde src/db/init.js)
 //   2) le nom exact des fonctions de ton middleware d'authentification
-//      (regarde src/middleware/auth.js : authenticateToken / requireAdmin
+//      (regarde src/middleware/auth.js : requireAuth / requireAdmin
 //      sont des noms courants mais peuvent etre differents chez toi)
 
 const express = require('express');
 const router = express.Router();
-const pool = require('../db/init'); // <-- ADAPTE si besoin
-const { authenticateToken, requireAdmin } = require('../middleware/auth'); // <-- ADAPTE si besoin
+const pool = require('../config/db');
+const { requireAuth, requireAdmin } = require('../middleware/auth'); // <-- ADAPTE si besoin
 const { aAccesCombinesPayants } = require('../utils/subscriptionAccess');
 
 const DUREE_ABONNEMENT_JOURS = 30;
@@ -22,7 +22,7 @@ const OPERATEURS_VALIDES = ['orange', 'mtn', 'moov'];
 // ============================ COTE CLIENT ============================
 
 // Le client soumet son code de transaction apres avoir paye
-router.post('/submit', authenticateToken, async (req, res) => {
+router.post('/submit', requireAuth, async (req, res) => {
   const { operator, phone_number, transaction_code, amount } = req.body;
 
   if (!operator || !phone_number || !transaction_code) {
@@ -55,7 +55,7 @@ router.post('/submit', authenticateToken, async (req, res) => {
 });
 
 // Le client consulte son statut (essai gratuit / abonnement / historique)
-router.get('/my-status', authenticateToken, async (req, res) => {
+router.get('/my-status', requireAuth, async (req, res) => {
   try {
     const userResult = await pool.query(
       `SELECT trial_ends_at, subscription_active, subscription_expires_at
@@ -93,7 +93,7 @@ router.get('/my-status', authenticateToken, async (req, res) => {
 // ============================= COTE ADMIN =============================
 
 // Liste des paiements (par defaut : ceux en attente de validation)
-router.get('/admin/list', authenticateToken, requireAdmin, async (req, res) => {
+router.get('/admin/list', requireAuth, requireAdmin, async (req, res) => {
   const statut = req.query.status || 'pending';
   try {
     const result = await pool.query(
@@ -112,7 +112,7 @@ router.get('/admin/list', authenticateToken, requireAdmin, async (req, res) => {
 });
 
 // Valider un paiement -> active ou prolonge l'abonnement du client
-router.post('/admin/:id/approve', authenticateToken, requireAdmin, async (req, res) => {
+router.post('/admin/:id/approve', requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const dureeJours = req.body.duree_jours || DUREE_ABONNEMENT_JOURS;
 
@@ -156,7 +156,7 @@ router.post('/admin/:id/approve', authenticateToken, requireAdmin, async (req, r
 });
 
 // Rejeter un paiement (code invalide, montant incorrect, etc.)
-router.post('/admin/:id/reject', authenticateToken, requireAdmin, async (req, res) => {
+router.post('/admin/:id/reject', requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { note } = req.body;
 
