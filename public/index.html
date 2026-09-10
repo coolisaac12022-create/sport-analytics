@@ -1,75 +1,152 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Predize Foot Isaac — Prédictions de matchs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
 
 <header class="topbar">
   <h1>⚽ Predize Foot Isaac</h1>
-  <p>Analyses statistiques et prédictions de matchs assistées par IA</p>
+  <p class="tagline">Analyses statistiques et prédictions assistées par IA</p>
+  <nav class="desktop-nav">
+    <button data-scroll="comboCard">Combinés</button>
+    <button data-scroll="calendarCard">Calendrier</button>
+  </nav>
   <nav id="authNav" class="auth-nav"></nav>
+  <button id="settingsOpenBtn" class="icon-btn" aria-label="Réglages">⚙️</button>
 </header>
 
 <main class="container">
+  <div class="main-col">
 
-  <section class="card sync-card">
-    <h2>Synchroniser une ligue</h2>
-    <p class="hint">Entre l'identifiant de ligue TheSportsDB (ex : <code>4328</code> = Premier League anglaise).</p>
-    <div class="form-row">
-      <input type="text" id="leagueIdInput" placeholder="ID de la ligue, ex : 4328" />
-      <button id="syncBtn">Synchroniser</button>
-    </div>
-    <p id="syncMessage" class="message"></p>
-  </section>
+    <section class="hero">
+      <p class="hero-date" id="heroDate"></p>
+      <p class="hero-figure" id="heroFigure">…<span>matchs chargés aujourd'hui</span></p>
+      <p class="hint">Choisis un niveau de combiné ci-dessous ou parcours le calendrier pour voir l'analyse d'un match.</p>
+    </section>
 
-  <section class="card">
-       <h2>📅 Calendrier des matchs</h2>
-    <p class="hint">Selection des matchs juges les plus fiables par l'IA, plus les meilleurs scores exacts pressentis.</p>
-    <div class="combo-tabs">
-      <button class="combo-tab-btn active" data-tier="ultra_safe">Ultra Safe</button>
-      <button class="combo-tab-btn" data-tier="safe">Safe</button>
-      <button class="combo-tab-btn" data-tier="equilibre">Equilibre</button>
-      <button class="combo-tab-btn" data-tier="agressif">Agressif</button>
-      <button class="combo-tab-btn" data-tier="daily_combo">Daily Combo</button>
-    </div>
-    <div id="comboContent">
-      <p class="hint">Connecte-toi pour voir le combine du jour.</p>
-    </div>
-  </section>
+    <details class="card sync-card">
+      <summary>Synchroniser une ligue (outil admin)</summary>
+      <p class="hint">Entre l'identifiant de ligue API-Football (ex : <code>2</code> = Ligue des Champions, <code>39</code> = Premier League).</p>
+      <div class="form-row">
+        <input type="text" id="leagueIdInput" placeholder="ID de la ligue, ex : 2" />
+        <button id="syncBtn">Synchroniser</button>
+      </div>
+      <p id="syncMessage" class="message"></p>
+    </details>
 
-  <section class="card">
-    <h2>Matchs à venir</h2>
-    <div class="calendar-nav">
-      <button id="prevDayBtn">← Veille</button>
-      <span id="calendarDateLabel" class="calendar-date-label"></span>
-      <button id="nextDayBtn">Lendemain →</button>
-    </div>
-    <div id="matchesList" class="matches-grid">
-      <p class="hint">Aucun match chargé pour le moment. Synchronise une ligue ci-dessus.</p>
-    </div>
-  </section>
+    <section class="card" id="comboCard">
+      <h2>Combinés du jour</h2>
+      <p class="hint">Sélection des matchs jugés les plus fiables par l'IA, plus les meilleurs scores exacts pressentis.</p>
+      <div class="combo-tabs">
+        <button class="combo-tab-btn active" data-tier="ultra_safe">Ultra Safe</button>
+        <button class="combo-tab-btn" data-tier="safe">Safe</button>
+        <button class="combo-tab-btn" data-tier="equilibre">Équilibré</button>
+        <button class="combo-tab-btn" data-tier="agressif">Agressif</button>
+        <button class="combo-tab-btn" data-tier="daily_combo">Daily Combo</button>
+      </div>
+      <div id="comboContent">
+        <p class="hint">Connecte-toi pour voir le combiné du jour.</p>
+      </div>
+    </section>
 
-  <section id="predictionSection" class="card hidden">
-    <h2>Analyse du match</h2>
-    <div id="predictionContent"></div>
-  </section>
+    <section class="card" id="calendarCard">
+      <h2>Matchs à venir</h2>
+      <div class="calendar-nav">
+        <button id="prevDayBtn">← Veille</button>
+        <span id="calendarDateLabel" class="calendar-date-label"></span>
+        <button id="nextDayBtn">Lendemain →</button>
+      </div>
+      <div id="matchesList" class="matches-grid">
+        <p class="hint">Aucun match chargé pour le moment. Synchronise une ligue ci-dessus.</p>
+      </div>
+    </section>
 
+    <section id="predictionSection" class="card hidden">
+      <h2>Analyse du match</h2>
+      <div id="predictionContent"></div>
+    </section>
+
+  </div>
+
+  <aside class="side-col">
+    <section class="card">
+      <h3>Assistance</h3>
+      <p class="hint">Une question sur un pronostic ou ton compte ?</p>
+      <div class="contact-links">
+        <a href="https://wa.me/2250595532884" target="_blank">WhatsApp</a>
+        <a href="mailto:coolisaac12022@gmail.com">Email</a>
+      </div>
+    </section>
+    <section class="card">
+      <h3>Compétitions suivies</h3>
+      <p class="hint">13 championnats synchronisés automatiquement, dont la Ligue des Champions.</p>
+    </section>
+  </aside>
 </main>
 
 <footer class="footer">
-  <p>Service client :</p>
   <div class="contact-links">
     <a href="https://wa.me/2250595532884" target="_blank">WhatsApp</a>
     <a href="mailto:coolisaac12022@gmail.com">Email</a>
+    <a href="/privacy.html">Confidentialité</a>
   </div>
   <p>Predize Foot Isaac</p>
 </footer>
 
+<!-- navigation mobile -->
+<nav class="bottom-nav">
+  <button data-scroll="comboCard" class="active"><span class="nav-icon">🏠</span>Accueil</button>
+  <button data-scroll="comboCard"><span class="nav-icon">🎯</span>Combinés</button>
+  <button data-scroll="calendarCard"><span class="nav-icon">📅</span>Calendrier</button>
+  <button id="settingsOpenBtnMobile"><span class="nav-icon">⚙️</span>Réglages</button>
+</nav>
+
+<!-- panneau réglages -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="drawer" id="settingsDrawer" aria-label="Réglages">
+  <div class="drawer-header">
+    <h2>Réglages</h2>
+    <button class="icon-btn" id="settingsCloseBtn" aria-label="Fermer">✕</button>
+  </div>
+
+  <div class="settings-group">
+    <h3>Compte</h3>
+    <div id="settingsAccountInfo" class="hint">Non connecté.</div>
+  </div>
+
+  <div class="settings-group">
+    <h3>Affichage</h3>
+    <div class="settings-row">
+      <span>Thème sombre</span>
+      <button class="toggle on" id="themeToggle" aria-label="Basculer le thème"></button>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h3>Notifications</h3>
+    <div class="settings-row">
+      <span>Alertes combiné du jour</span>
+      <button class="toggle" id="notifToggle" aria-label="Basculer les notifications"></button>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h3>Général</h3>
+    <button class="settings-link-btn" id="clearCacheBtn">Vider le cache local</button>
+    <a class="settings-link-btn" href="/privacy.html">Politique de confidentialité</a>
+    <a class="settings-link-btn" href="https://wa.me/2250595532884" target="_blank">Contacter le support</a>
+    <button class="settings-link-btn danger hidden" id="settingsLogoutBtn">Déconnexion</button>
+  </div>
+</aside>
+
 <script src="/js/app.js"></script>
+<script src="/js/settings.js"></script>
 <script src="/js/cookie-banner.js"></script>
 <script src="/js/galika-observer.js"></script>
 <script src="/js/galika-ui.js"></script>
