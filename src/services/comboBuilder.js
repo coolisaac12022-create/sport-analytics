@@ -46,7 +46,7 @@ async function ensurePrediction(match) {
 }
 
 async function analyzeUpcomingMatches(dateStr) {
-  const matchesRes = await pool.query("SELECT * FROM matches WHERE match_date >= NOW() AND match_date::date <= ($1::date + INTERVAL '4 days') ORDER BY match_date ASC LIMIT 80", [dateStr]);
+  const matchesRes = await pool.query("SELECT * FROM matches WHERE match_date >= NOW() AND match_date::date <= ($1::date + INTERVAL '7 days') ORDER BY match_date ASC LIMIT 80", [dateStr]);
   const matches = matchesRes.rows;
   if (matches.length === 0) throw new Error("Aucun match trouve pour cette date.");
 
