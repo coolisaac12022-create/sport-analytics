@@ -80,12 +80,15 @@ async function getPastMatchesByLeague(code) {
   return (data.matches || []).map(transformMatch);
 }
 
+function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
 async function loadTeamCache() {
   const now = Date.now();
   if (teamCache && (now - teamCacheLoadedAt) < TEAM_CACHE_TTL_MS) return teamCache;
 
   const cache = {};
-  for (const code of FREE_COMPETITION_CODES) {
+  for (let i = 0; i < FREE_COMPETITION_CODES.length; i++) {
+    const code = FREE_COMPETITION_CODES[i];
     try {
       const data = await request(`/competitions/${code}/teams`);
       (data.teams || []).forEach((t) => {
@@ -95,6 +98,7 @@ async function loadTeamCache() {
     } catch (e) {
       console.error(`Erreur chargement equipes ${code} :`, e.message);
     }
+    if (i < FREE_COMPETITION_CODES.length - 1) await sleep(6500);
   }
   teamCache = cache;
   teamCacheLoadedAt = now;
