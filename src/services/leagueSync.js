@@ -93,7 +93,7 @@ async function badge(name,url){
 }
 
 function getConfiguredLeagueIds(){
-  return (process.env.AUTO_SYNC_LEAGUE_IDS||'39,140,135,78,61,2,3,94,88,203,207,179,128')
+  return (process.env.AUTO_SYNC_LEAGUE_IDS||'PL,PD,SA,BL1,FL1,CL,DED,PPL,ELC,BSA')
     .split(',').map(x=>x.trim()).filter(Boolean);
 }
 

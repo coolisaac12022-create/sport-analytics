@@ -1,19 +1,50 @@
 const fetch = require('node-fetch');
 
-const configuredBase = (process.env.SPORTS_API_BASE_URL || '').replace(/\/+$/, '');
-const BASE_URL = configuredBase.includes('api-sports.io') ? configuredBase : 'https://v3.football.api-sports.io';
-
+const BASE_URL = 'https://api.football-data.org/v4';
 const API_KEY = process.env.SPORTS_API_KEY;
 
+const FREE_COMPETITION_CODES = ['PL','PD','SA','BL1','FL1','CL','DED','PPL','ELC','BSA','WC','EC'];
+
+let teamCache = null;
+let teamCacheLoadedAt = 0;
+const TEAM_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
+
+function mapStatus(s) {
+  if (s === 'FINISHED' || s === 'AWARDED') return 'FT';
+  if (s === 'IN_PLAY') return 'LIVE';
+  if (s === 'PAUSED') return 'HT';
+  if (s === 'POSTPONED') return 'PST';
+  if (s === 'SUSPENDED') return 'SUSP';
+  if (s === 'CANCELLED') return 'CANC';
+  return 'NS';
+}
+
+function transformMatch(m) {
+  return {
+    fixture: { id: m.id, date: m.utcDate, status: { short: mapStatus(m.status) } },
+    league: {
+      name: (m.competition && m.competition.name) || null,
+      season: (m.season && m.season.startDate) ? m.season.startDate.slice(0, 4) : null
+    },
+    teams: {
+      home: { name: (m.homeTeam && (m.homeTeam.name || m.homeTeam.shortName)) || 'Unknown', logo: m.homeTeam && m.homeTeam.crest },
+      away: { name: (m.awayTeam && (m.awayTeam.name || m.awayTeam.shortName)) || 'Unknown', logo: m.awayTeam && m.awayTeam.crest }
+    },
+    goals: {
+      home: (m.score && m.score.fullTime) ? m.score.fullTime.home : null,
+      away: (m.score && m.score.fullTime) ? m.score.fullTime.away : null
+    }
+  };
+}
+
 async function request(path, params = {}) {
-  console.log("API CONFIG:", {keyPresent: Boolean(API_KEY), baseUrl: BASE_URL});
+  console.log('API CONFIG:', { keyPresent: Boolean(API_KEY), baseUrl: BASE_URL });
 
   if (!API_KEY) {
     throw new Error('SPORTS_API_KEY manquante.');
   }
 
-  const url = new URL(`${BASE_URL}/${path}`);
-
+  const url = new URL(`${BASE_URL}${path}`);
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
       url.searchParams.set(key, value);
@@ -21,64 +52,77 @@ async function request(path, params = {}) {
   });
 
   const res = await fetch(url.toString(), {
-    headers: {
-      'x-apisports-key': API_KEY,
-      accept: 'application/json'
-    }
+    headers: { 'X-Auth-Token': API_KEY, accept: 'application/json' }
   });
 
+  if (res.status === 429) {
+    throw new Error('Erreur API Football-Data (429) : quota depasse.');
+  }
   if (!res.ok) {
-    throw new Error(`Erreur API Football (${res.status}).`);
+    throw new Error(`Erreur API Football-Data (${res.status}).`);
   }
 
-  const data = await res.json();
-
-  if (data.errors && Object.keys(data.errors).length > 0) {
-    throw new Error(JSON.stringify(data.errors));
-  }
-
-  return data.response || [];
+  return res.json();
 }
 
-// Tous les matchs d'une date.
-// Cette fonction permettra d'économiser les requêtes du forfait gratuit.
 async function getFixturesByDate(date) {
-  return request('fixtures', {
-    date
-  });
+  const data = await request('/matches', { dateFrom: date, dateTo: date });
+  return (data.matches || []).map(transformMatch);
 }
 
-// Prochains matchs d'une compétition.
-async function getUpcomingMatchesByLeague(leagueId) {
-  return request('fixtures', {
-    league: leagueId,
-    next: 20
-  });
+async function getUpcomingMatchesByLeague(code) {
+  const data = await request(`/competitions/${code}/matches`, { status: 'SCHEDULED' });
+  return (data.matches || []).map(transformMatch);
 }
 
-// Derniers matchs d'une compétition.
-async function getPastMatchesByLeague(leagueId) {
-  return request('fixtures', {
-    league: leagueId,
-    last: 20
-  });
+async function getPastMatchesByLeague(code) {
+  const data = await request(`/competitions/${code}/matches`, { status: 'FINISHED' });
+  return (data.matches || []).map(transformMatch);
 }
 
-// Recherche d'une équipe par nom.
+async function loadTeamCache() {
+  const now = Date.now();
+  if (teamCache && (now - teamCacheLoadedAt) < TEAM_CACHE_TTL_MS) return teamCache;
+
+  const cache = {};
+  for (const code of FREE_COMPETITION_CODES) {
+    try {
+      const data = await request(`/competitions/${code}/teams`);
+      (data.teams || []).forEach((t) => {
+        cache[t.name.toLowerCase()] = t;
+        if (t.shortName) cache[t.shortName.toLowerCase()] = t;
+      });
+    } catch (e) {
+      console.error(`Erreur chargement equipes ${code} :`, e.message);
+    }
+  }
+  teamCache = cache;
+  teamCacheLoadedAt = now;
+  return cache;
+}
+
 async function getTeamByName(name) {
-  const teams = await request('teams', {
-    search: name
-  });
+  if (!name) return null;
+  const cache = await loadTeamCache();
+  const key = name.toLowerCase();
 
-  return teams[0]?.team || null;
+  if (cache[key]) {
+    const t = cache[key];
+    return { id: t.id, idTeam: t.id, name: t.name, logo: t.crest };
+  }
+
+  const match = Object.keys(cache).find((k) => k.includes(key) || key.includes(k));
+  if (match) {
+    const t = cache[match];
+    return { id: t.id, idTeam: t.id, name: t.name, logo: t.crest };
+  }
+  return null;
 }
 
-// Derniers matchs d'une équipe.
 async function getLastResultsByTeam(teamId) {
-  return request('fixtures', {
-    team: teamId,
-    last: 5
-  });
+  if (!teamId) return [];
+  const data = await request(`/teams/${teamId}/matches`, { status: 'FINISHED', limit: 5 });
+  return (data.matches || []).map(transformMatch);
 }
 
 module.exports = {
