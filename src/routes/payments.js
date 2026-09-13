@@ -58,7 +58,7 @@ router.post('/submit', requireAuth, async (req, res) => {
 router.get('/my-status', requireAuth, async (req, res) => {
   try {
     const userResult = await pool.query(
-      `SELECT trial_ends_at, subscription_active, subscription_expires_at
+      `SELECT role, trial_ends_at, subscription_active, subscription_expires_at
        FROM users WHERE id = $1`,
       [req.user.id]
     );
@@ -70,7 +70,7 @@ router.get('/my-status', requireAuth, async (req, res) => {
 
     const user = userResult.rows[0];
     const maintenant = new Date();
-    const enEssaiGratuit = user.trial_ends_at && new Date(user.trial_ends_at) > maintenant;
+    const enEssaiGratuit = user.role === 'admin' ? true : (user.trial_ends_at && new Date(user.trial_ends_at) > maintenant);
     const abonnementActif =
       user.subscription_active &&
       user.subscription_expires_at &&
