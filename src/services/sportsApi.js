@@ -37,7 +37,18 @@ function transformMatch(m) {
   };
 }
 
+let lastRequestTime = 0;
+const MIN_INTERVAL_MS = 6500;
+
+async function throttle() {
+  const now = Date.now();
+  const wait = lastRequestTime + MIN_INTERVAL_MS - now;
+  if (wait > 0) await sleep(wait);
+  lastRequestTime = Date.now();
+}
+
 async function request(path, params = {}) {
+  await throttle();
   console.log('API CONFIG:', { keyPresent: Boolean(API_KEY), baseUrl: BASE_URL });
 
   if (!API_KEY) {
