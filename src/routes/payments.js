@@ -17,7 +17,7 @@ const { requireAuth, requireAdmin } = require('../middleware/auth'); // <-- ADAP
 const { aAccesCombinesPayants } = require('../utils/subscriptionAccess');
 
 const DUREE_ABONNEMENT_JOURS = 30;
-const OPERATEURS_VALIDES = ['orange', 'mtn', 'moov'];
+const OPERATEURS_VALIDES = ['orange', 'mtn', 'moov', 'wave'];
 
 // ============================ COTE CLIENT ============================
 
@@ -32,7 +32,7 @@ router.post('/submit', requireAuth, async (req, res) => {
   }
 
   if (!OPERATEURS_VALIDES.includes(String(operator).toLowerCase())) {
-    return res.status(400).json({ error: 'Operateur invalide (orange, mtn ou moov).' });
+    return res.status(400).json({ error: 'Operateur invalide (orange, mtn, moov ou wave).' });
   }
 
   try {
