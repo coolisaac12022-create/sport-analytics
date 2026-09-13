@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Predize Foot Isaac — Prédictions de matchs</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <h1>⚽ Predize Foot Isaac</h1>
+  <p>Analyses statistiques et prédictions de matchs assistées par IA</p>
+  <nav id="authNav" class="auth-nav"></nav>
+</header>
+
+<main class="container">
+
+  <section class="card sync-card">
+    <h2>Synchroniser une ligue</h2>
+    <p class="hint">Entre l'identifiant de ligue TheSportsDB (ex : <code>4328</code> = Premier League anglaise).</p>
+    <div class="form-row">
+      <input type="text" id="leagueIdInput" placeholder="ID de la ligue, ex : 4328" />
+      <button id="syncBtn">Synchroniser</button>
+    </div>
+    <p id="syncMessage" class="message"></p>
+  </section>
+
+  <section class="card">
+       <h2>📅 Calendrier des matchs</h2>
+    <p class="hint">Selection des matchs juges les plus fiables par l'IA, plus les meilleurs scores exacts pressentis.</p>
+    <div class="combo-tabs">
+      <button class="combo-tab-btn active" data-tier="ultra_safe">Ultra Safe</button>
+      <button class="combo-tab-btn" data-tier="safe">Safe</button>
+      <button class="combo-tab-btn" data-tier="equilibre">Equilibre</button>
+      <button class="combo-tab-btn" data-tier="agressif">Agressif</button>
+      <button class="combo-tab-btn" data-tier="daily_combo">Daily Combo</button>
+    </div>
+    <div id="comboContent">
+      <p class="hint">Connecte-toi pour voir le combine du jour.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Matchs à venir</h2>
+    <div class="calendar-nav">
+      <button id="prevDayBtn">← Veille</button>
+      <span id="calendarDateLabel" class="calendar-date-label"></span>
+      <button id="nextDayBtn">Lendemain →</button>
+    </div>
+    <div id="matchesList" class="matches-grid">
+      <p class="hint">Aucun match chargé pour le moment. Synchronise une ligue ci-dessus.</p>
+    </div>
+  </section>
+
+  <section id="predictionSection" class="card hidden">
+    <h2>Analyse du match</h2>
+    <div id="predictionContent"></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Service client :</p>
+  <div class="contact-links">
+    <a href="https://wa.me/2250595532884" target="_blank">WhatsApp</a>
+    <a href="mailto:coolisaac12022@gmail.com">Email</a>
+  </div>
+  <p>Predize Foot Isaac</p>
+</footer>
+
+<script src="/js/app.js"></script>
+<script src="/js/cookie-banner.js"></script>
+<script src="/js/galika-observer.js"></script>
+<script src="/js/galika-ui.js"></script>
+<script src="/js/galika-page-context.js"></script>
+</body>
+</html>

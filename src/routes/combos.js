@@ -43,4 +43,22 @@ router.get('/:date', async (req, res) => {
   }
 });
 
+
+// Historique des combines (7 derniers jours)
+router.get('/history', async (req, res) => {
+  try {
+    const tier = req.query.tier || 'safe';
+    const result = await pool.query(
+      "SELECT combo_date, tier, ai_summary, created_at FROM daily_combos " +
+      "WHERE combo_date <= CURRENT_DATE AND tier = $1 " +
+      "ORDER BY combo_date DESC LIMIT 7",
+      [tier]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+});
+
 module.exports = router;

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mon espace — Predize</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a href="/" class="brand"><span class="brand-badge">⚽</span>Predize</a>
+    <nav class="auth-nav" id="authNav"></nav>
+  </div>
+</header>
+
+<main class="container section" style="padding-top:1.5rem;">
+
+  <!-- Bandeau statut abonnement -->
+  <div id="subscriptionBanner"></div>
+
+  <!-- Onglets -->
+  <div class="combo-tabs" style="margin:1.2rem 0;">
+    <button class="combo-tab-btn active" data-view="combos">🎯 Combinés</button>
+    <button class="combo-tab-btn" data-view="matches">📅 Matchs du jour</button>
+    <button class="combo-tab-btn" data-view="history">📊 Historique</button>
+  </div>
+
+  <!-- Vue combinés -->
+  <section id="view-combos">
+    <div class="combo-tabs" id="tierTabs" style="border-bottom:1px solid var(--line);">
+      <button class="combo-tab-btn active" data-tier="ultra_safe">Ultra Safe</button>
+      <button class="combo-tab-btn" data-tier="safe">Safe</button>
+      <button class="combo-tab-btn" data-tier="equilibre">Équilibré</button>
+      <button class="combo-tab-btn" data-tier="agressif">Agressif</button>
+      <button class="combo-tab-btn" data-tier="daily_combo">Daily Combo</button>
+    </div>
+    <div id="comboContent"><p class="hint">Chargement…</p></div>
+  </section>
+
+  <!-- Vue matchs -->
+  <section id="view-matches" class="hidden">
+    <div class="calendar-nav" style="margin-bottom:1rem;">
+      <button id="prevDayBtn" class="btn btn-outline btn-sm">← Veille</button>
+      <strong id="calendarDateLabel" style="text-transform:capitalize;"></strong>
+      <button id="nextDayBtn" class="btn btn-outline btn-sm">Lendemain →</button>
+    </div>
+    <div id="matchesList" class="grid-2"><p class="hint">Chargement…</p></div>
+  </section>
+
+  <!-- Vue historique -->
+  <section id="view-history" class="hidden">
+    <div id="historyContent"><p class="hint">Chargement…</p></div>
+  </section>
+
+  <!-- Analyse de match -->
+  <section id="predictionSection" class="card hidden" style="margin-top:1.4rem;border-color:var(--gold);">
+    <h3 style="display:flex;justify-content:space-between;align-items:center;">
+      Analyse du match
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('predictionSection').classList.add('hidden')">✕ Fermer</button>
+    </h3>
+    <div id="predictionContent"></div>
+  </section>
+
+</main>
+
+<nav class="bottom-nav">
+  <button onclick="window.location.href='/dashboard.html'"><span class="nav-icon">🎯</span>Combinés</button>
+  <button onclick="switchView('matches')"><span class="nav-icon">📅</span>Matchs</button>
+  <button onclick="switchView('history')"><span class="nav-icon">📊</span>Historique</button>
+  <button onclick="window.location.href='/'"><span class="nav-icon">🏠</span>Accueil</button>
+</nav>
+
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

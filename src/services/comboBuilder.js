@@ -120,23 +120,22 @@ async function getCombo(dateStr, tier) {
   if (comboRes.rows.length === 0) return null;
   const combo = comboRes.rows[0];
   const selectionsRes = await pool.query(
-    "SELECT cs.*, m.home_team_name, m.away_team_name, m.match_date, m.status, m.home_score, m.away_score, p.btts_yes_prob, p.over_1_5_prob, p.over_2_5_prob " +
-    "FROM combo_selections cs JOIN matches m ON m.id = cs.match_id " +
+    "SELECT cs.*, " +
+    "m.home_team_name, m.away_team_name, m.match_date, m.status, m.home_score, m.away_score, " +
+    "m.league AS league, " +
+    "th.badge_url AS home_team_badge, " +
+    "ta.badge_url AS away_team_badge, " +
+    "p.btts_yes_prob, p.over_1_5_prob, p.over_2_5_prob " +
+    "FROM combo_selections cs " +
+    "JOIN matches m ON m.id = cs.match_id " +
+    "LEFT JOIN teams th ON th.id = m.home_team_id " +
+    "LEFT JOIN teams ta ON ta.id = m.away_team_id " +
     "LEFT JOIN LATERAL (SELECT btts_yes_prob, over_1_5_prob, over_2_5_prob FROM predictions WHERE match_id = cs.match_id ORDER BY created_at DESC LIMIT 1) p ON true " +
     "WHERE cs.combo_id = $1 ORDER BY cs.pick_type ASC, cs.confidence DESC",
     [combo.id]
   );
   const picks = selectionsRes.rows.map(function(row) { row.result = evaluatePick(row); return row; });
   return { combo: combo, picks: picks };
-}
-
-async function buildAllTiers(dateStr) {
-  const results = {};
-  for (const tier of Object.keys(TIER_CONFIG)) {
-    try { results[tier] = await buildDailyCombo(dateStr, tier); }
-    catch (err) { console.error('Erreur combine tier ' + tier + ' : ' + err.message); }
-  }
-  return results;
 }
 
 module.exports = { buildDailyCombo: buildDailyCombo, getCombo: getCombo, buildAllTiers: buildAllTiers };

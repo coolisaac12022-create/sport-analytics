@@ -3,153 +3,156 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Predize Foot Isaac — Prédictions de matchs</title>
+<title>Predize — Pronostics sportifs analysés par IA</title>
+<meta name="description" content="Analyses statistiques et pronostics de matchs assistés par IA. Aperçu gratuit chaque jour, combinés premium pour abonnés." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
 
+<!-- ================= HEADER ================= -->
 <header class="topbar">
-  <h1>⚽ Predize Foot Isaac</h1>
-  <p class="tagline">Analyses statistiques et prédictions assistées par IA</p>
-  <nav class="desktop-nav">
-    <button data-scroll="comboCard">Combinés</button>
-    <button data-scroll="calendarCard">Calendrier</button>
-  </nav>
-  <nav id="authNav" class="auth-nav"></nav>
-  <button id="settingsOpenBtn" class="icon-btn" aria-label="Réglages">⚙️</button>
+  <div class="container topbar-inner">
+    <a href="/" class="brand"><span class="brand-badge">⚽</span>Predize</a>
+    <nav class="auth-nav" id="authNav"></nav>
+  </div>
 </header>
 
-<main class="container">
-  <div class="main-col">
-
-    <section class="hero">
-      <p class="hero-date" id="heroDate"></p>
-      <p class="hero-figure" id="heroFigure">…<span>matchs chargés aujourd'hui</span></p>
-      <p class="hint">Choisis un niveau de combiné ci-dessous ou parcours le calendrier pour voir l'analyse d'un match.</p>
-    </section>
-
-    <details class="card sync-card">
-      <summary>Synchroniser une ligue (outil admin)</summary>
-      <p class="hint">Entre l'identifiant de ligue API-Football (ex : <code>2</code> = Ligue des Champions, <code>39</code> = Premier League).</p>
-      <div class="form-row">
-        <input type="text" id="leagueIdInput" placeholder="ID de la ligue, ex : 2" />
-        <button id="syncBtn">Synchroniser</button>
-      </div>
-      <p id="syncMessage" class="message"></p>
-    </details>
-
-    <section class="card" id="comboCard">
-      <h2>Combinés du jour</h2>
-      <p class="hint">Sélection des matchs jugés les plus fiables par l'IA, plus les meilleurs scores exacts pressentis.</p>
-      <div class="combo-tabs">
-        <button class="combo-tab-btn active" data-tier="ultra_safe">Ultra Safe</button>
-        <button class="combo-tab-btn" data-tier="safe">Safe</button>
-        <button class="combo-tab-btn" data-tier="equilibre">Équilibré</button>
-        <button class="combo-tab-btn" data-tier="agressif">Agressif</button>
-        <button class="combo-tab-btn" data-tier="daily_combo">Daily Combo</button>
-      </div>
-      <div id="comboContent">
-        <p class="hint">Connecte-toi pour voir le combiné du jour.</p>
-      </div>
-    </section>
-
-    <section class="card" id="calendarCard">
-      <h2>Matchs à venir</h2>
-      <div class="calendar-nav">
-        <button id="prevDayBtn">← Veille</button>
-        <span id="calendarDateLabel" class="calendar-date-label"></span>
-        <button id="nextDayBtn">Lendemain →</button>
-      </div>
-      <div id="matchesList" class="matches-grid">
-        <p class="hint">Aucun match chargé pour le moment. Synchronise une ligue ci-dessus.</p>
-      </div>
-    </section>
-
-    <section id="predictionSection" class="card hidden">
-      <h2>Analyse du match</h2>
-      <div id="predictionContent"></div>
-    </section>
-
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="container">
+    <span class="kicker">Analyses par intelligence artificielle</span>
+    <h1>Des pronostics <span class="gold">calculés</span>,<br />pas des intuitions.</h1>
+    <p class="sub">Chaque jour, notre moteur analyse la forme des équipes, les historiques et les statistiques pour te délivrer les sélections les plus fiables.</p>
+    <div class="hero-actions">
+      <a href="/register.html" class="btn btn-gold">Créer un compte gratuit</a>
+      <a href="#picks" class="btn btn-outline">Voir l'aperçu du jour</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num" id="statMatches">—</div><div class="lbl">matchs analysés / jour</div></div>
+      <div class="hero-stat"><div class="num" id="statLeagues">13</div><div class="lbl">compétitions suivies</div></div>
+      <div class="hero-stat"><div class="num">5</div><div class="lbl">niveaux de combinés</div></div>
+    </div>
   </div>
+</section>
 
-  <aside class="side-col">
-    <section class="card">
-      <h3>Assistance</h3>
-      <p class="hint">Une question sur un pronostic ou ton compte ?</p>
-      <div class="contact-links">
-        <a href="https://wa.me/2250595532884" target="_blank">WhatsApp</a>
-        <a href="mailto:coolisaac12022@gmail.com">Email</a>
+<!-- ================= APERÇU GRATUIT ================= -->
+<section class="section" id="picks">
+  <div class="container">
+    <div class="section-head">
+      <h2>Aperçu du jour</h2>
+      <p>Voici un extrait de nos analyses. Les abonnés accèdent aux sélections complètes, aux scores exacts et aux combinés.</p>
+    </div>
+
+    <div class="grid-2" id="freePicks">
+      <!-- Rempli dynamiquement par js/public.js -->
+      <p class="hint" style="text-align:center;grid-column:1/-1;">Chargement des matchs du jour…</p>
+    </div>
+
+    <p style="text-align:center;margin-top:1.6rem;">
+      <a href="/register.html" class="btn btn-gold">Débloquer toutes les analyses →</a>
+    </p>
+  </div>
+</section>
+
+<!-- ================= COMMENT ÇA MARCHE ================= -->
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="section-head">
+      <h2>Comment ça marche</h2>
+    </div>
+    <div class="grid-3">
+      <div class="card step-card">
+        <div class="step-num">1</div>
+        <h3>Crée ton compte</h3>
+        <p>Inscription gratuite en 30 secondes. Accès immédiat à l'aperçu du jour.</p>
       </div>
-    </section>
-    <section class="card">
-      <h3>Compétitions suivies</h3>
-      <p class="hint">13 championnats synchronisés automatiquement, dont la Ligue des Champions.</p>
-    </section>
-  </aside>
-</main>
+      <div class="card step-card">
+        <div class="step-num">2</div>
+        <h3>Choisis ton abonnement</h3>
+        <p>Paiement simple par Mobile Money (Orange, MTN, Moov). Validation sous 24h.</p>
+      </div>
+      <div class="card step-card">
+        <div class="step-num">3</div>
+        <h3>Reçois tes combinés</h3>
+        <p>Nouvelles sélections chaque matin à 8h, classées par niveau de risque.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- ================= PRICING ================= -->
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="section-head">
+      <h2>Choisis ta formule</h2>
+      <p>Commence gratuitement, passe à la vitesse supérieure quand tu es prêt.</p>
+    </div>
+
+    <div class="grid-2" style="max-width:760px;margin:0 auto;">
+      <!-- GRATUIT -->
+      <div class="pricing-card">
+        <div class="pricing-name">Découverte</div>
+        <div class="pricing-price">0 F <small>/ 7 jours</small></div>
+        <ul class="pricing-features">
+          <li>Aperçu des matchs du jour</li>
+          <li>2 analyses gratuites / jour</li>
+          <li>Résultats publics des combinés</li>
+          <li class="no">Combinés premium complets</li>
+          <li class="no">Scores exacts pressentis</li>
+        </ul>
+        <a href="/register.html" class="btn btn-outline" style="width:100%;">Commencer gratuitement</a>
+      </div>
+
+      <!-- PREMIUM -->
+      <div class="pricing-card featured">
+        <span class="pricing-badge">Recommandé</span>
+        <div class="pricing-name">Premium</div>
+        <div class="pricing-price">2 500 F <small>/ mois</small></div>
+        <ul class="pricing-features">
+          <li>Tous les combinés (5 niveaux)</li>
+          <li>Scores exacts pressentis</li>
+          <li>Analyses détaillées par match</li>
+          <li>Historique complet des résultats</li>
+          <li>Support prioritaire WhatsApp</li>
+        </ul>
+        <a href="/register.html" class="btn btn-gold" style="width:100%;">Passer Premium</a>
+      </div>
+    </div>
+
+    <p style="text-align:center;color:var(--ink-muted);font-size:0.85rem;margin-top:1.2rem;">
+      Paiement par Mobile Money · Orange Money, MTN MoMo, Moov Money
+    </p>
+  </div>
+</section>
+
+<!-- ================= BANDEAU LÉGAL ================= -->
+<div class="container">
+  <div class="legal-strip">
+    ⚠️ Les pronostics sont des analyses statistiques à titre informatif. Aucune garantie de gain.
+    Les paris sportifs comportent des risques : joue responsablement. +18 ans.
+  </div>
+</div>
+
+<!-- ================= FOOTER ================= -->
 <footer class="footer">
-  <div class="contact-links">
-    <a href="https://wa.me/2250595532884" target="_blank">WhatsApp</a>
-    <a href="mailto:coolisaac12022@gmail.com">Email</a>
+  <div class="footer-links">
     <a href="/privacy.html">Confidentialité</a>
+    <a href="mailto:coolisaac12022@gmail.com">Email</a>
+    <a href="https://wa.me/2250595532884" target="_blank" rel="noopener">WhatsApp</a>
   </div>
-  <p>Predize Foot Isaac</p>
+  <p>© 2026 Predize — Analyses sportives par IA</p>
 </footer>
 
-<!-- navigation mobile -->
+<!-- ================= NAV MOBILE ================= -->
 <nav class="bottom-nav">
-  <button data-scroll="comboCard" class="active"><span class="nav-icon">🏠</span>Accueil</button>
-  <button data-scroll="comboCard"><span class="nav-icon">🎯</span>Combinés</button>
-  <button data-scroll="calendarCard"><span class="nav-icon">📅</span>Calendrier</button>
-  <button id="settingsOpenBtnMobile"><span class="nav-icon">⚙️</span>Réglages</button>
+  <button class="active" onclick="window.location.href='/'"><span class="nav-icon">🏠</span>Accueil</button>
+  <button onclick="document.getElementById('picks').scrollIntoView({behavior:'smooth'})"><span class="nav-icon">🎯</span>Pronostics</button>
+  <button onclick="document.querySelector('.pricing-card.featured').scrollIntoView({behavior:'smooth',block:'center'})"><span class="nav-icon">💎</span>Premium</button>
+  <button onclick="window.location.href='/login.html'"><span class="nav-icon">👤</span>Compte</button>
 </nav>
 
-<!-- panneau réglages -->
-<div class="drawer-overlay" id="drawerOverlay"></div>
-<aside class="drawer" id="settingsDrawer" aria-label="Réglages">
-  <div class="drawer-header">
-    <h2>Réglages</h2>
-    <button class="icon-btn" id="settingsCloseBtn" aria-label="Fermer">✕</button>
-  </div>
-
-  <div class="settings-group">
-    <h3>Compte</h3>
-    <div id="settingsAccountInfo" class="hint">Non connecté.</div>
-  </div>
-
-  <div class="settings-group">
-    <h3>Affichage</h3>
-    <div class="settings-row">
-      <span>Thème sombre</span>
-      <button class="toggle on" id="themeToggle" aria-label="Basculer le thème"></button>
-    </div>
-  </div>
-
-  <div class="settings-group">
-    <h3>Notifications</h3>
-    <div class="settings-row">
-      <span>Alertes combiné du jour</span>
-      <button class="toggle" id="notifToggle" aria-label="Basculer les notifications"></button>
-    </div>
-  </div>
-
-  <div class="settings-group">
-    <h3>Général</h3>
-    <button class="settings-link-btn" id="clearCacheBtn">Vider le cache local</button>
-    <a class="settings-link-btn" href="/privacy.html">Politique de confidentialité</a>
-    <a class="settings-link-btn" href="https://wa.me/2250595532884" target="_blank">Contacter le support</a>
-    <button class="settings-link-btn danger hidden" id="settingsLogoutBtn">Déconnexion</button>
-  </div>
-</aside>
-
-<script src="/js/app.js"></script>
-<script src="/js/settings.js"></script>
-<script src="/js/cookie-banner.js"></script>
-<script src="/js/galika-observer.js"></script>
-<script src="/js/galika-ui.js"></script>
-<script src="/js/galika-page-context.js"></script>
+<script src="/js/public.js"></script>
 </body>
 </html>
