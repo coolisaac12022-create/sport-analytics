@@ -84,8 +84,8 @@ router.post('/register', async (req, res) => {
 
     const { rows } = await pool.query(
       `INSERT INTO users
-         (name, email, phone, birth_year, password_hash, role, email_verification_token, phone_otp_code, phone_otp_expires)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+         (name, email, phone, birth_year, password_hash, role, email_verification_token, phone_otp_code, phone_otp_expires, trial_ends_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, NOW() + INTERVAL '3 days')
        RETURNING *`,
       [name, email, phone, year, passwordHash, role, emailToken, otpCode, otpExpires]
     );
