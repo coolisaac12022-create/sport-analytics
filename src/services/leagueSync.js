@@ -45,38 +45,29 @@ function dates(d){
   return d.toISOString().slice(0,10);
 }
 
-async function syncDate(date){
-  const events=await api.getFixturesByDate(date);
-  let n=0;
-  for(const e of events)try{if(await save(e))n++;}catch(x){console.error('Erreur match : '+x.message);}
-  return n;
-}
-
 async function autoSyncAllLeagues(){
   let n=0;
-  for(let i=0;i<=1;i++){
-    const d=new Date();
-    d.setUTCDate(d.getUTCDate()+i);
+  const codes=getConfiguredLeagueIds();
+  for(const code of codes){
     try{
-      const x=await syncDate(dates(d));
+      const x=await syncLeague(code);
       n+=x;
-      console.log('Synchronisation '+dates(d)+' : '+x+' match(s).');
-    }catch(e){console.error('Erreur sync '+dates(d)+' : '+e.message);}
+      console.log('Synchronisation '+code+' : '+x+' match(s).');
+    }catch(e){console.error('Erreur sync '+code+' : '+e.message);}
   }
   return n;
 }
 
 async function updateFinishedResults(){
   let n=0;
-  for(let i=1;i>=0;i--){
-    const d=new Date();
-    d.setUTCDate(d.getUTCDate()-i);
+  const codes=getConfiguredLeagueIds();
+  for(const code of codes){
     try{
-      const events=await api.getFixturesByDate(dates(d));
+      const events=await api.getPastMatchesByLeague(code);
       for(const e of events)
         if(status(e.fixture?.status)==='finished'&&e.goals?.home!=null&&e.goals?.away!=null)
           if(await save(e))n++;
-    }catch(e){console.error('Erreur résultats : '+e.message);}
+    }catch(e){console.error('Erreur résultats '+code+' : '+e.message);}
   }
   return n;
 }
