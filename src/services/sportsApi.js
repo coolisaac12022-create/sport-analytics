@@ -71,7 +71,7 @@ async function getFixturesByDate(date) {
 }
 
 async function getUpcomingMatchesByLeague(code) {
-  const data = await request(`/competitions/${code}/matches`, { status: 'SCHEDULED' });
+  const data = await request(`/competitions/${code}/matches`, { status: 'SCHEDULED,LIVE,IN_PLAY,PAUSED,TIMED' });
   return (data.matches || []).map(transformMatch);
 }
 
