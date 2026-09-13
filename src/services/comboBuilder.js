@@ -138,4 +138,13 @@ async function getCombo(dateStr, tier) {
   return { combo: combo, picks: picks };
 }
 
+async function buildAllTiers(dateStr) {
+  const results = {};
+  for (const tier of Object.keys(TIER_CONFIG)) {
+    try { results[tier] = await buildDailyCombo(dateStr, tier); }
+    catch (err) { console.error('Erreur combine tier ' + tier + ' : ' + err.message); }
+  }
+  return results;
+}
+
 module.exports = { buildDailyCombo: buildDailyCombo, getCombo: getCombo, buildAllTiers: buildAllTiers };
