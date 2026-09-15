@@ -119,6 +119,27 @@ router.get('/matches', async (req, res) => {
   }
 });
 
+router.get('/predictions', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT m.id AS match_id, m.home_team_name, m.away_team_name, m.league, m.match_date,
+              p.home_win_prob, p.draw_prob, p.away_win_prob,
+              p.predicted_score_home, p.predicted_score_away,
+              p.confidence, p.created_at AS predicted_at
+       FROM matches m
+       LEFT JOIN LATERAL (
+         SELECT * FROM predictions pr WHERE pr.match_id = m.id ORDER BY pr.created_at DESC LIMIT 1
+       ) p ON true
+       ORDER BY m.match_date DESC
+       LIMIT 200`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+});
+
 router.delete('/matches/:id', async (req, res) => {
   try {
     const { rows } = await pool.query('DELETE FROM matches WHERE id = $1 RETURNING id', [req.params.id]);
