@@ -429,3 +429,71 @@ async function loadCombo() {
 }
 
 document.getElementById('loadComboBtn').addEventListener('click', loadCombo);
+
+// ===================== PREDICTIONS =====================
+
+function pct(v) {
+  if (v === null || v === undefined) return '—';
+  return Math.round(v * 100) + '%';
+}
+
+async function generatePrediction(matchId, btn) {
+  btn.disabled = true;
+  btn.textContent = '...';
+  try {
+    const res = await fetch(`${API}/predictions/${matchId}`, { method: 'POST', headers: authHeaders });
+    if (res.status === 401 || res.status === 403) return handleAuthError();
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur.');
+    loadPredictions();
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Réessayer';
+    alert(err.message || 'Erreur lors de la generation.');
+  }
+}
+
+async function loadPredictions() {
+  const tbody = document.querySelector('#predictionsTable tbody');
+  const msg = document.getElementById('predictionsTableMessage');
+  msg.textContent = 'Chargement...';
+  msg.className = 'message';
+  try {
+    const res = await fetch(`${API}/admin/predictions`, { headers: authHeaders });
+    if (res.status === 401 || res.status === 403) return handleAuthError();
+    const rows = await res.json();
+    tbody.innerHTML = '';
+    if (!rows || rows.length === 0) {
+      msg.textContent = 'Aucun match pour le moment.';
+      return;
+    }
+    msg.textContent = '';
+    rows.forEach((m) => {
+      const tr = document.createElement('tr');
+      const hasPrediction = m.predicted_at != null;
+      const score = hasPrediction ? `${m.predicted_score_home} - ${m.predicted_score_away}` : '—';
+      const conf = hasPrediction ? `${m.confidence}%` : '—';
+      const btnLabel = hasPrediction ? 'Régénérer' : 'Générer';
+      tr.innerHTML = `
+        <td>${escapeHtml(m.home_team_name)} - ${escapeHtml(m.away_team_name)}</td>
+        <td>${escapeHtml(m.league || '')}</td>
+        <td>${formatDate(m.match_date)}</td>
+        <td>${pct(m.home_win_prob)}</td>
+        <td>${pct(m.draw_prob)}</td>
+        <td>${pct(m.away_win_prob)}</td>
+        <td>${score}</td>
+        <td>${conf}</td>
+        <td><button class="gen-pred-btn" data-id="${m.match_id}">${btnLabel}</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+    tbody.querySelectorAll('.gen-pred-btn').forEach((btn) => {
+      btn.addEventListener('click', () => generatePrediction(btn.dataset.id, btn));
+    });
+  } catch (err) {
+    msg.textContent = err.message || 'Impossible de charger les predictions.';
+    msg.className = 'message error';
+  }
+}
+
+loadPredictions();

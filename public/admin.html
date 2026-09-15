@@ -127,7 +127,19 @@
     </div>
 
     <div id="page-matches" class="page"><section class="card"><h2>Matchs</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
-    <div id="page-predictions" class="page"><section class="card"><h2>Prédictions</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
+    <div id="page-predictions" class="page">
+      <section class="card">
+        <h2>Prédictions</h2>
+        <p class="hint">Liste des matchs avec leur dernière prédiction IA. Clique sur "Générer" pour calculer ou recalculer.</p>
+        <div class="table-wrap">
+          <table id="predictionsTable">
+            <thead><tr><th>Match</th><th>Ligue</th><th>Date</th><th>1</th><th>N</th><th>2</th><th>Score prédit</th><th>Confiance</th><th>Action</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="predictionsTableMessage" class="message"></p>
+      </section>
+    </div>
     <div id="page-combos" class="page">
       <section class="card">
         <h2>Combinés</h2>
