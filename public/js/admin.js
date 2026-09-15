@@ -380,3 +380,52 @@ async function loadSubscriptions() {
 }
 
 loadSubscriptions();
+
+// ===================== COMBINES =====================
+
+const RESULT_LABEL = { won: 'Gagné', lost: 'Perdu', pending: 'En attente' };
+const RESULT_CLASS = { won: 'status-approved', lost: 'status-rejected', pending: 'status-pending' };
+
+async function loadCombo() {
+  const tier = document.getElementById('comboTierSelect').value;
+  const summary = document.getElementById('comboSummary');
+  const tbody = document.querySelector('#comboTable tbody');
+  const msg = document.getElementById('comboTableMessage');
+  summary.textContent = '';
+  tbody.innerHTML = '';
+  msg.textContent = 'Chargement...';
+  msg.className = 'message';
+  try {
+    const res = await fetch(`${API}/combos/today?tier=${tier}`, { headers: authHeaders });
+    if (res.status === 401 || res.status === 403) return handleAuthError();
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur.');
+
+    const picks = data.picks || [];
+    summary.textContent = `Combiné du ${formatDate(data.combo && data.combo.combo_date)} — ${picks.length} sélection(s)`;
+
+    if (picks.length === 0) {
+      msg.textContent = 'Aucune sélection pour cette formule aujourd\'hui.';
+      return;
+    }
+    msg.textContent = '';
+    picks.forEach((p) => {
+      const tr = document.createElement('tr');
+      const resultClass = RESULT_CLASS[p.result] || 'status-pending';
+      const resultLabel = RESULT_LABEL[p.result] || p.result;
+      tr.innerHTML = `
+        <td>${escapeHtml(p.home_team_name)} - ${escapeHtml(p.away_team_name)}</td>
+        <td>${escapeHtml(p.pick_label)}</td>
+        <td>${p.confidence ? Math.round(10000 / p.confidence) / 100 : '—'}</td>
+        <td>${p.confidence}%</td>
+        <td><span class="status-tag ${resultClass}">${resultLabel}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    msg.textContent = err.message || 'Impossible de charger le combiné.';
+    msg.className = 'message error';
+  }
+}
+
+document.getElementById('loadComboBtn').addEventListener('click', loadCombo);

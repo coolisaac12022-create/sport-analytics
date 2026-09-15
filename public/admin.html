@@ -128,7 +128,30 @@
 
     <div id="page-matches" class="page"><section class="card"><h2>Matchs</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
     <div id="page-predictions" class="page"><section class="card"><h2>Prédictions</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
-    <div id="page-combos" class="page"><section class="card"><h2>Combinés</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
+    <div id="page-combos" class="page">
+      <section class="card">
+        <h2>Combinés</h2>
+        <p class="hint">Choisis une formule pour voir le détail des sélections du jour.</p>
+        <div class="form-row">
+          <select id="comboTierSelect" style="flex:1;min-width:160px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;">
+            <option value="ultra_safe">Ultra Safe</option>
+            <option value="safe" selected>Safe</option>
+            <option value="equilibre">Équilibré</option>
+            <option value="agressif">Agressif</option>
+            <option value="daily_combo">Combiné du jour</option>
+          </select>
+          <button id="loadComboBtn">Charger</button>
+        </div>
+        <p id="comboSummary" class="hint" style="margin-top:10px;"></p>
+        <div class="table-wrap">
+          <table id="comboTable">
+            <thead><tr><th>Match</th><th>Sélection</th><th>Cote</th><th>Confiance</th><th>Résultat</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="comboTableMessage" class="message"></p>
+      </section>
+    </div>
     <div id="page-stats" class="page"><section class="card"><h2>Statistiques</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
     <div id="page-notifs" class="page"><section class="card"><h2>Notifications</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
     <div id="page-settings" class="page"><section class="card"><h2>Paramètres</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
