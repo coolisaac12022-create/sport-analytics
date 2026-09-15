@@ -329,3 +329,15 @@ loadStats();
 loadPayments();
 loadUsers();
 loadLogins();
+
+// ===================== NAVIGATION BARRE LATERALE =====================
+
+document.querySelectorAll('.sidebar .navlink').forEach((link) => {
+  link.addEventListener('click', () => {
+    document.querySelectorAll('.sidebar .navlink').forEach((l) => l.classList.remove('active'));
+    document.querySelectorAll('.page').forEach((p) => p.classList.remove('active'));
+    link.classList.add('active');
+    const target = document.getElementById('page-' + link.dataset.page);
+    if (target) target.classList.add('active');
+  });
+});

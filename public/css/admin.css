@@ -115,3 +115,32 @@ tr:last-child td{border-bottom:none;}
 .footer{text-align:center;padding:20px;font-size:12px;color:var(--text-dim);}
 .footer a{color:var(--text-muted);}
 .footer a:hover{color:var(--violet-2);}
+
+/* ===== Barre laterale (sidebar) ===== */
+.shell{display:flex;min-height:100vh;}
+.sidebar{
+  width:220px;flex-shrink:0;background:#0c0c16;
+  border-right:1px solid var(--border-soft);
+  padding:20px 12px;display:flex;flex-direction:column;gap:20px;
+}
+.sidebar .brand{display:flex;align-items:center;gap:10px;padding:4px 6px;font-weight:700;font-size:14px;}
+.sidebar .brand-mark{
+  width:32px;height:32px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--violet),var(--blue));
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;
+}
+.sidebar nav{display:flex;flex-direction:column;gap:2px;}
+.sidebar .navlink{
+  display:block;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;
+  color:var(--text-muted);cursor:pointer;
+}
+.sidebar .navlink:hover{background:var(--surface-2);color:var(--text);}
+.sidebar .navlink.active{background:var(--violet-soft);color:var(--violet-2);}
+main.mainpanel{flex:1;min-width:0;padding:22px 24px 60px;}
+.page{display:none;}
+.page.active{display:block;}
+@media (max-width:820px){
+  .shell{flex-direction:column;}
+  .sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:10px;}
+  .sidebar nav{flex-direction:row;}
+}

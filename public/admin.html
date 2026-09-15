@@ -8,93 +8,125 @@
 </head>
 <body>
 
-<header class="topbar">
-  <div>
-    <h1>Espace Administrateur</h1>
-    <p>Predize Foot Isaac — gestion des clients, des matchs et des paiements</p>
-  </div>
-  <div class="topbar-right">
-    <span class="status-pill"><i></i>En ligne</span>
-  </div>
-</header>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">IP</div>Isaac Prédiction</div>
+    <nav>
+      <a class="navlink active" data-page="dashboard">Dashboard</a>
+      <a class="navlink" data-page="users">Utilisateurs</a>
+      <a class="navlink" data-page="subs">Abonnements</a>
+      <a class="navlink" data-page="matches">Matchs</a>
+      <a class="navlink" data-page="predictions">Prédictions</a>
+      <a class="navlink" data-page="combos">Combinés</a>
+      <a class="navlink" data-page="payments">Paiements</a>
+      <a class="navlink" data-page="stats">Statistiques</a>
+      <a class="navlink" data-page="notifs">Notifications</a>
+      <a class="navlink" data-page="settings">Paramètres</a>
+    </nav>
+  </aside>
 
-<main class="container">
+  <main class="mainpanel">
 
-  <section id="statsCards" class="stats-grid">
-    <div class="stat-card"><span id="statUsers">–</span><label>Clients inscrits</label></div>
-    <div class="stat-card"><span id="statVerified">–</span><label>Comptes vérifiés</label></div>
-    <div class="stat-card"><span id="statMatches">–</span><label>Matchs enregistrés</label></div>
-    <div class="stat-card"><span id="statPredictions">–</span><label>Prédictions générées</label></div>
-  </section>
+    <header class="topbar" style="padding:0 0 18px;border-bottom:none;">
+      <div>
+        <h1>Espace Administrateur</h1>
+        <p>Predize Foot Isaac — gestion des clients, des matchs et des paiements</p>
+      </div>
+      <div class="topbar-right">
+        <span class="status-pill"><i></i>En ligne</span>
+      </div>
+    </header>
 
-  <section class="card">
-    <div class="card-head">
-      <h2>Paiements Mobile Money à valider</h2>
-      <span class="count-badge" id="paymentsCount">0 en attente</span>
+    <div id="page-dashboard" class="page active">
+      <section id="statsCards" class="stats-grid">
+        <div class="stat-card"><span id="statUsers">–</span><label>Clients inscrits</label></div>
+        <div class="stat-card"><span id="statVerified">–</span><label>Comptes vérifiés</label></div>
+        <div class="stat-card"><span id="statMatches">–</span><label>Matchs enregistrés</label></div>
+        <div class="stat-card"><span id="statPredictions">–</span><label>Prédictions générées</label></div>
+      </section>
+
+      <section class="card">
+        <h2>Synchroniser une ligue</h2>
+        <p class="hint">Force la synchronisation immédiate d'une ligue (Code Football-Data, ex : PL = Premier League, CL = Champions League, FL1 = Ligue 1).</p>
+        <div class="form-row">
+          <input type="text" id="leagueIdInput" placeholder="ID de la ligue" />
+          <button id="syncLeagueBtn">Synchroniser</button>
+        </div>
+        <p id="syncMessage" class="message"></p>
+      </section>
+
+      <section class="card">
+        <h2>Combiné du jour</h2>
+        <p class="hint">Force le recalcul du combiné avec les derniers matchs et le moteur le plus à jour.</p>
+        <button id="regenerateComboBtn">Régénérer le combiné du jour</button>
+        <p id="comboMessage" class="message"></p>
+      </section>
+
+      <section class="card">
+        <h2>Connexions récentes</h2>
+        <div class="table-wrap">
+          <table id="loginsTable">
+            <thead><tr></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="loginsMessage" class="message"></p>
+      </section>
     </div>
-    <p class="hint">Vérifie le code de transaction envoyé par le client avant de valider son abonnement.</p>
-    <div class="table-wrap">
-      <table id="paymentsTable">
-        <thead>
-          <tr>
-            <th>Client</th><th>Opérateur</th><th>Montant</th><th>Code transaction</th><th>Date</th><th>Statut</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+
+    <div id="page-users" class="page">
+      <section class="card">
+        <h2>Clients</h2>
+        <p class="hint">Email et numéro de téléphone de chaque client inscrit.</p>
+        <div class="table-wrap">
+          <table id="usersTable">
+            <thead>
+              <tr>
+                <th>Nom</th><th>Email</th><th>Téléphone</th><th>Rôle</th><th>Vérifié</th><th>Statut</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="usersMessage" class="message"></p>
+      </section>
     </div>
-    <p id="paymentsMessage" class="message"></p>
-  </section>
 
-  <section class="card">
-    <h2>Synchroniser une ligue</h2>
-    <p class="hint">Force la synchronisation immédiate d'une ligue (Code Football-Data, ex : PL = Premier League, CL = Champions League, FL1 = Ligue 1).</p>
-    <div class="form-row">
-      <input type="text" id="leagueIdInput" placeholder="ID de la ligue" />
-      <button id="syncLeagueBtn">Synchroniser</button>
+    <div id="page-payments" class="page">
+      <section class="card">
+        <div class="card-head">
+          <h2>Paiements Mobile Money à valider</h2>
+          <span class="count-badge" id="paymentsCount">0 en attente</span>
+        </div>
+        <p class="hint">Vérifie le code de transaction envoyé par le client avant de valider son abonnement.</p>
+        <div class="table-wrap">
+          <table id="paymentsTable">
+            <thead>
+              <tr>
+                <th>Client</th><th>Opérateur</th><th>Montant</th><th>Code transaction</th><th>Date</th><th>Statut</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="paymentsMessage" class="message"></p>
+      </section>
     </div>
-    <p id="syncMessage" class="message"></p>
-  </section>
 
-  <section class="card">
-    <h2>Combiné du jour</h2>
-    <p class="hint">Force le recalcul du combiné avec les derniers matchs et le moteur le plus à jour.</p>
-    <button id="regenerateComboBtn">Régénérer le combiné du jour</button>
-    <p id="comboMessage" class="message"></p>
-  </section>
+    <div id="page-subs" class="page"><section class="card"><h2>Abonnements</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
+    <div id="page-matches" class="page"><section class="card"><h2>Matchs</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
+    <div id="page-predictions" class="page"><section class="card"><h2>Prédictions</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
+    <div id="page-combos" class="page"><section class="card"><h2>Combinés</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
+    <div id="page-stats" class="page"><section class="card"><h2>Statistiques</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
+    <div id="page-notifs" class="page"><section class="card"><h2>Notifications</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
+    <div id="page-settings" class="page"><section class="card"><h2>Paramètres</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
 
-  <section class="card">
-    <h2>Connexions récentes</h2>
-    <div class="table-wrap">
-      <table id="loginsTable">
-        <thead><tr></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <p id="loginsMessage" class="message"></p>
-  </section>
+    <footer class="footer">
+      <p><a href="/">← Retour au site</a> · <a href="#" id="logoutLink">Se déconnecter</a></p>
+    </footer>
 
-  <section class="card">
-    <h2>Clients</h2>
-    <p class="hint">Email et numéro de téléphone de chaque client inscrit.</p>
-    <div class="table-wrap">
-      <table id="usersTable">
-        <thead>
-          <tr>
-            <th>Nom</th><th>Email</th><th>Téléphone</th><th>Rôle</th><th>Vérifié</th><th>Statut</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <p id="usersMessage" class="message"></p>
-  </section>
-
-</main>
-
-<footer class="footer">
-  <p><a href="/">← Retour au site</a> · <a href="#" id="logoutLink">Se déconnecter</a></p>
-</footer>
+  </main>
+</div>
 
 <script src="/js/admin.js"></script>
 </body>
