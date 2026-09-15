@@ -73,6 +73,7 @@ async function buildDailyCombo(dateStr, tier) {
   for (const item of analyzed) {
     if (comboPicks.length >= config.maxPicks) break;
     const odds = 1 / item.bestOption.prob;
+    if (odds < 1.25) continue;
     comboPicks.push({ matchId: item.match.id, homeTeam: item.match.home_team_name, awayTeam: item.match.away_team_name, label: item.bestOption.label, resultKey: item.bestOption.key, type: "1x2", confidence: Math.round(item.bestOption.prob * 100), odds: Math.round(odds * 100) / 100 });
     runningOdds *= odds;
     if (runningOdds >= config.targetOdds) break;
