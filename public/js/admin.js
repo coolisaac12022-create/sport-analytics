@@ -344,8 +344,8 @@ document.querySelectorAll('.sidebar .navlink').forEach((link) => {
 
 // ===================== ABONNEMENTS =====================
 
-const SUB_LABEL = { active: 'Actif', trial: 'Essai gratuit', expired: 'Expiré' };
-const SUB_CLASS = { active: 'status-approved', trial: 'status-pending', expired: 'status-rejected' };
+const SUB_LABEL = { admin: 'Administrateur', active: 'Actif', trial: 'Essai gratuit', expired: 'Expiré' };
+const SUB_CLASS = { admin: 'status-approved', active: 'status-approved', trial: 'status-pending', expired: 'status-rejected' };
 
 async function loadSubscriptions() {
   const tbody = document.querySelector('#subsTable tbody');

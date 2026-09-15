@@ -143,7 +143,8 @@ router.get('/subscriptions', async (req, res) => {
       const abonneActif = u.subscription_active && u.subscription_expires_at && new Date(u.subscription_expires_at) > maintenant;
       let statut = 'expired';
       let expireLe = u.subscription_expires_at;
-      if (abonneActif) { statut = 'active'; }
+      if (u.role === 'admin') { statut = 'admin'; }
+      else if (abonneActif) { statut = 'active'; }
       else if (enEssai) { statut = 'trial'; expireLe = u.trial_ends_at; }
       return {
         id: u.id, name: u.name, email: u.email, phone: u.phone,
