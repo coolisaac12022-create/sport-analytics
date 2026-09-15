@@ -1,28 +1,25 @@
 // src/routes/payments.js
 // Paiement Mobile Money en validation MANUELLE.
-// Flux : le client paie sur ton numero Mobile Money -> colle son code de
-// transaction ici -> toi (admin) tu verifies dans ton espace admin et tu
-// valides ou rejettes.
-//
-// A ADAPTER avant utilisation (2 lignes ci-dessous, verifie tes fichiers) :
-//   1) le chemin/nom de ton pool PostgreSQL (regarde src/db/init.js)
-//   2) le nom exact des fonctions de ton middleware d'authentification
-//      (regarde src/middleware/auth.js : requireAuth / requireAdmin
-//      sont des noms courants mais peuvent etre differents chez toi)
 
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
 const pool = require('../config/db');
-const { requireAuth, requireAdmin } = require('../middleware/auth'); // <-- ADAPTE si besoin
+const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { aAccesCombinesPayants } = require('../utils/subscriptionAccess');
 
 const DUREE_ABONNEMENT_JOURS = 30;
 const OPERATEURS_VALIDES = ['orange', 'mtn', 'moov', 'wave'];
 
+const submitLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  message: { error: 'Trop de soumissions de paiement. Réessaie dans une heure.' }
+});
+
 // ============================ COTE CLIENT ============================
 
-// Le client soumet son code de transaction apres avoir paye
-router.post('/submit', requireAuth, async (req, res) => {
+router.post('/submit', submitLimiter, requireAuth, async (req, res) => {
   const { operator, phone_number, transaction_code, amount } = req.body;
 
   if (!operator || !phone_number || !transaction_code) {
@@ -54,7 +51,6 @@ router.post('/submit', requireAuth, async (req, res) => {
   }
 });
 
-// Le client consulte son statut (essai gratuit / abonnement / historique)
 router.get('/my-status', requireAuth, async (req, res) => {
   try {
     const userResult = await pool.query(
@@ -92,7 +88,6 @@ router.get('/my-status', requireAuth, async (req, res) => {
 
 // ============================= COTE ADMIN =============================
 
-// Liste des paiements (par defaut : ceux en attente de validation)
 router.get('/admin/list', requireAuth, requireAdmin, async (req, res) => {
   const statut = req.query.status || 'pending';
   try {
@@ -111,7 +106,6 @@ router.get('/admin/list', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
-// Valider un paiement -> active ou prolonge l'abonnement du client
 router.post('/admin/:id/approve', requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const dureeJours = req.body.duree_jours || DUREE_ABONNEMENT_JOURS;
@@ -155,7 +149,6 @@ router.post('/admin/:id/approve', requireAuth, requireAdmin, async (req, res) =>
   }
 });
 
-// Rejeter un paiement (code invalide, montant incorrect, etc.)
 router.post('/admin/:id/reject', requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { note } = req.body;

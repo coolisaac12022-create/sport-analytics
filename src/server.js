@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const path = require('path');
 
 const matchesRouter = require('./routes/matches');
@@ -19,8 +20,25 @@ const { autoSyncAllLeagues, updateFinishedResults } = require('./services/league
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.json());
+const ALLOWED_ORIGINS = [
+  'https://sport-analytics-zhy3.onrender.com',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000'
+];
+
+app.use(helmet({
+  contentSecurityPolicy: false
+}));
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    return callback(new Error('Origine non autorisée par CORS: ' + origin));
+  }
+}));
+
+app.use(express.json({ limit: '10kb' }));
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 

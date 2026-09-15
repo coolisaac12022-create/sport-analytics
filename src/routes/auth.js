@@ -13,11 +13,16 @@ const { requireAuth } = require('../middleware/auth');
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^\+?[0-9]{8,15}$/;
 
-// Limite le nombre de tentatives de connexion pour se protéger du "brute force"
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   message: { error: 'Trop de tentatives de connexion. Réessaie dans 15 minutes.' }
+});
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 8,
+  message: { error: 'Trop de tentatives d\'inscription depuis cet appareil. Réessaie dans une heure.' }
 });
 
 function signToken(user) {
@@ -41,7 +46,7 @@ function publicUser(u) {
 }
 
 // POST /api/auth/register
-router.post('/register', async (req, res) => {
+router.post('/register', registerLimiter, async (req, res) => {
   try {
     const { name, email, phone, password, birthYear } = req.body;
 
@@ -50,7 +55,7 @@ router.post('/register', async (req, res) => {
     }
 
     const year = Number(birthYear);
-    const maxYear = new Date().getFullYear() - 19;
+    const maxYear = new Date().getFullYear() - 18;
 
     if (!Number.isInteger(year) || year < 1900 || year > maxYear) {
       return res.status(400).json({
@@ -75,9 +80,8 @@ router.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 12);
     const emailToken = generateEmailToken();
     const otpCode = generateOtpCode();
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
-    // Le compte dont l'email correspond à ADMIN_EMAIL est automatiquement administrateur
     const role = process.env.ADMIN_EMAIL && email.toLowerCase() === process.env.ADMIN_EMAIL.toLowerCase()
       ? 'admin'
       : 'user';
@@ -91,13 +95,10 @@ router.post('/register', async (req, res) => {
     );
     const user = rows[0];
 
-    await Promise.all([
-      sendVerificationEmail({ to: email, name, token: emailToken }),
-      sendOtpSms({ to: phone, code: otpCode })
-    ]);
+    await sendVerificationEmail({ to: email, name, token: emailToken });
 
     res.status(201).json({
-      message: 'Compte créé. Vérifie ton email (lien reçu) et ton téléphone (code reçu par SMS) pour l\'activer.',
+      message: 'Compte créé. Vérifie ton email (lien reçu) pour l\'activer.',
       user: publicUser(user)
     });
   } catch (err) {
