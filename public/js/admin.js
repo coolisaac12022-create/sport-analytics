@@ -341,3 +341,42 @@ document.querySelectorAll('.sidebar .navlink').forEach((link) => {
     if (target) target.classList.add('active');
   });
 });
+
+// ===================== ABONNEMENTS =====================
+
+const SUB_LABEL = { active: 'Actif', trial: 'Essai gratuit', expired: 'Expiré' };
+const SUB_CLASS = { active: 'status-approved', trial: 'status-pending', expired: 'status-rejected' };
+
+async function loadSubscriptions() {
+  const tbody = document.querySelector('#subsTable tbody');
+  const msg = document.getElementById('subsMessage');
+  try {
+    const res = await fetch(`${API}/admin/subscriptions`, { headers: authHeaders });
+    if (res.status === 401 || res.status === 403) return handleAuthError();
+    const rows = await res.json();
+    tbody.innerHTML = '';
+    if (!rows || rows.length === 0) {
+      msg.textContent = 'Aucun client pour le moment.';
+      msg.className = 'message';
+      return;
+    }
+    msg.textContent = '';
+    rows.forEach((u) => {
+      const tr = document.createElement('tr');
+      const statusClass = SUB_CLASS[u.statut] || 'status-pending';
+      const statusLabel = SUB_LABEL[u.statut] || u.statut;
+      tr.innerHTML = `
+        <td>${escapeHtml(u.name)}</td>
+        <td>${escapeHtml(u.email || u.phone || '')}</td>
+        <td><span class="status-tag ${statusClass}">${statusLabel}</span></td>
+        <td>${formatDate(u.expire_le)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    msg.textContent = 'Impossible de charger les abonnements.';
+    msg.className = 'message error';
+  }
+}
+
+loadSubscriptions();

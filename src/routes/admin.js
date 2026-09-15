@@ -130,4 +130,31 @@ router.delete('/matches/:id', async (req, res) => {
   }
 });
 
+
+router.get('/subscriptions', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, name, email, phone, role, trial_ends_at, subscription_active, subscription_expires_at
+       FROM users ORDER BY created_at DESC`
+    );
+    const maintenant = new Date();
+    const data = rows.map((u) => {
+      const enEssai = u.role === 'admin' ? true : (u.trial_ends_at && new Date(u.trial_ends_at) > maintenant);
+      const abonneActif = u.subscription_active && u.subscription_expires_at && new Date(u.subscription_expires_at) > maintenant;
+      let statut = 'expired';
+      let expireLe = u.subscription_expires_at;
+      if (abonneActif) { statut = 'active'; }
+      else if (enEssai) { statut = 'trial'; expireLe = u.trial_ends_at; }
+      return {
+        id: u.id, name: u.name, email: u.email, phone: u.phone,
+        statut, expire_le: expireLe
+      };
+    });
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+});
+
 module.exports = router;
