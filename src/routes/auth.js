@@ -48,6 +48,10 @@ function publicUser(u) {
 // POST /api/auth/register
 router.post('/register', registerLimiter, async (req, res) => {
   try {
+    const openRow = await pool.query("SELECT value FROM site_settings WHERE key = 'registration_open'");
+    if (openRow.rows.length && openRow.rows[0].value === 'false') {
+      return res.status(403).json({ error: 'Les inscriptions sont temporairement fermees.' });
+    }
     const { name, email, phone, password, birthYear } = req.body;
 
     if (!name || !email || !phone || !password || !birthYear) {

@@ -64,6 +64,8 @@ async function analyzeUpcomingMatches(dateStr) {
 async function buildDailyCombo(dateStr, tier) {
   tier = tier || 'safe';
   const config = TIER_CONFIG[tier] || TIER_CONFIG.safe;
+  const minOddsRow = await pool.query("SELECT value FROM site_settings WHERE key = 'min_pick_odds'");
+  const MIN_ODDS = minOddsRow.rows.length ? parseFloat(minOddsRow.rows[0].value) : 1.25;
   const analyzedAll = await analyzeUpcomingMatches(dateStr);
   const analyzed = analyzedAll.filter(function(item) { return item.bestOption.prob >= config.minProb; });
   analyzed.sort(function(a, b) { return b.bestOption.prob - a.bestOption.prob; });
@@ -73,7 +75,7 @@ async function buildDailyCombo(dateStr, tier) {
   for (const item of analyzed) {
     if (comboPicks.length >= config.maxPicks) break;
     const odds = 1 / item.bestOption.prob;
-    if (odds < 1.25) continue;
+    if (odds < MIN_ODDS) continue;
     comboPicks.push({ matchId: item.match.id, homeTeam: item.match.home_team_name, awayTeam: item.match.away_team_name, label: item.bestOption.label, resultKey: item.bestOption.key, type: "1x2", confidence: Math.round(item.bestOption.prob * 100), odds: Math.round(odds * 100) / 100 });
     runningOdds *= odds;
     if (runningOdds >= config.targetOdds) break;
