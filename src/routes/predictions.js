@@ -9,7 +9,9 @@ router.use(requireAuth, async (req, res, next) => {
   try {
     const { rows } = await pool.query('SELECT email_verified, phone_verified FROM users WHERE id = $1', [req.user.id]);
     const user = rows[0];
-    if (false) {
+    const emailVerifRow = await pool.query("SELECT value FROM site_settings WHERE key = 'email_verification_required'");
+    const emailVerifRequired = emailVerifRow.rows.length && emailVerifRow.rows[0].value === 'true';
+    if (emailVerifRequired && !user.email_verified) {
       return res.status(403).json({ error: 'Verifie ton email pour acceder aux analyses.' });
     }
     next();

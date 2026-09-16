@@ -208,7 +208,9 @@ router.post('/login', loginLimiter, async (req, res) => {
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) return res.status(401).json({ error: 'Identifiants incorrects.' });
 
-    if (false) {
+    const emailVerifRow = await pool.query("SELECT value FROM site_settings WHERE key = 'email_verification_required'");
+    const emailVerifRequired = emailVerifRow.rows.length && emailVerifRow.rows[0].value === 'true';
+    if (emailVerifRequired && !user.email_verified) {
       return res.status(403).json({ error: 'Merci de vérifier ton email avant de te connecter.' });
     }
 
