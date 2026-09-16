@@ -166,7 +166,35 @@
     </div>
     <div id="page-stats" class="page"><section class="card"><h2>Statistiques</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
     <div id="page-notifs" class="page"><section class="card"><h2>Notifications</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
-    <div id="page-settings" class="page"><section class="card"><h2>Paramètres</h2><p class="hint">Section pas encore construite — à faire dans une prochaine étape.</p></section></div>
+    <div id="page-settings" class="page">
+      <section class="card">
+        <h2>Paramètres</h2>
+        <p class="hint">Réglages globaux du site. Les changements sont appliqués immédiatement.</p>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label for="minOddsInput" style="min-width:220px;">Cote minimum par pick (combinés)</label>
+          <input id="minOddsInput" type="number" step="0.01" min="1" style="width:100px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;">
+        </div>
+
+        <div class="form-row" style="margin-top:14px;">
+          <label for="registrationToggle" style="min-width:220px;">Inscriptions ouvertes</label>
+          <input id="registrationToggle" type="checkbox">
+        </div>
+
+        <div class="form-row" style="margin-top:14px;">
+          <label for="emailVerifToggle" style="min-width:220px;">Vérification email obligatoire</label>
+          <input id="emailVerifToggle" type="checkbox">
+        </div>
+
+        <div class="form-row" style="margin-top:14px;">
+          <label for="maintenanceToggle" style="min-width:220px;">Mode maintenance</label>
+          <input id="maintenanceToggle" type="checkbox">
+        </div>
+
+        <button id="saveSettingsBtn" style="margin-top:20px;">Enregistrer</button>
+        <p id="settingsMessage" class="message"></p>
+      </section>
+    </div>
 
     <footer class="footer">
       <p><a href="/">← Retour au site</a> · <a href="#" id="logoutLink">Se déconnecter</a></p>

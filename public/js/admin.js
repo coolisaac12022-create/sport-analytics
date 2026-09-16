@@ -497,3 +497,52 @@ async function loadPredictions() {
 }
 
 loadPredictions();
+
+// ===================== PARAMETRES =====================
+
+async function loadSettings() {
+  const msg = document.getElementById('settingsMessage');
+  try {
+    const res = await fetch(`${API}/admin/settings`, { headers: authHeaders });
+    if (res.status === 401 || res.status === 403) return handleAuthError();
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur.');
+    document.getElementById('minOddsInput').value = data.min_pick_odds || '1.25';
+    document.getElementById('registrationToggle').checked = data.registration_open === 'true';
+    document.getElementById('emailVerifToggle').checked = data.email_verification_required === 'true';
+    document.getElementById('maintenanceToggle').checked = data.maintenance_mode === 'true';
+  } catch (err) {
+    msg.textContent = err.message || 'Impossible de charger les parametres.';
+    msg.className = 'message error';
+  }
+}
+
+async function saveSettings() {
+  const msg = document.getElementById('settingsMessage');
+  const btn = document.getElementById('saveSettingsBtn');
+  btn.disabled = true;
+  msg.textContent = 'Enregistrement...';
+  msg.className = 'message';
+  try {
+    const payload = {
+      min_pick_odds: document.getElementById('minOddsInput').value,
+      registration_open: document.getElementById('registrationToggle').checked ? 'true' : 'false',
+      email_verification_required: document.getElementById('emailVerifToggle').checked ? 'true' : 'false',
+      maintenance_mode: document.getElementById('maintenanceToggle').checked ? 'true' : 'false'
+    };
+    const res = await fetch(`${API}/admin/settings`, { method: 'PUT', headers: authHeaders, body: JSON.stringify(payload) });
+    if (res.status === 401 || res.status === 403) return handleAuthError();
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur.');
+    msg.textContent = 'Parametres enregistres.';
+    msg.className = 'message success';
+  } catch (err) {
+    msg.textContent = err.message || 'Impossible d\'enregistrer.';
+    msg.className = 'message error';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+loadSettings();
