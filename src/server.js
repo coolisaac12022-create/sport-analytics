@@ -40,6 +40,23 @@ app.use(cors({
 
 app.use(express.json({ limit: '10kb' }));
 
+app.use(async (req, res, next) => {
+  try {
+    const allowedPrefixes = ['/api/admin', '/api/auth', '/admin.html', '/css/', '/js/', '/images/'];
+    if (allowedPrefixes.some(function(p) { return req.path.startsWith(p); })) return next();
+    const { rows } = await pool.query("SELECT value FROM site_settings WHERE key = 'maintenance_mode'");
+    const maintenance = rows.length && rows[0].value === 'true';
+    if (!maintenance) return next();
+    if (req.path.startsWith('/api/')) {
+      return res.status(503).json({ error: 'Site en maintenance. Reessaie plus tard.' });
+    }
+    res.status(503).send('<html><body style="font-family:sans-serif;text-align:center;padding:60px;"><h1>Site en maintenance</h1><p>Nous revenons tres bientot.</p></body></html>');
+  } catch (err) {
+    console.error(err);
+    next();
+  }
+});
+
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get('/api/health', async (req, res) => {
