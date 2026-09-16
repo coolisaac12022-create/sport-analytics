@@ -179,4 +179,40 @@ router.get('/subscriptions', async (req, res) => {
   }
 });
 
+
+router.get('/settings', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT key, value FROM site_settings');
+    const settings = {};
+    rows.forEach((r) => { settings[r.key] = r.value; });
+    res.json(settings);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+});
+
+router.put('/settings', async (req, res) => {
+  try {
+    const updates = req.body || {};
+    const keys = Object.keys(updates);
+    if (keys.length === 0) {
+      return res.status(400).json({ error: 'Aucun parametre a mettre a jour.' });
+    }
+    for (const key of keys) {
+      await pool.query(
+        `INSERT INTO site_settings (key, value, updated_at) VALUES ($1, $2, NOW())
+         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()`,
+        [key, String(updates[key])]
+      );
+    }
+    const { rows } = await pool.query('SELECT key, value FROM site_settings');
+    const settings = {};
+    rows.forEach((r) => { settings[r.key] = r.value; });
+    res.json({ message: 'Parametres mis a jour.', settings });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+});
 module.exports = router;
